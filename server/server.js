@@ -8,4 +8,18 @@
 
 console.log("Initializing RESTCache...");
 
+/**
+ * Imports
+ */
+var Cache = require('./src/Cache');
+
+/**
+ * Initialize the cache
+ */
+var globalCache = new Cache();
+
+/**
+ * Initialize the interface(s)
+ */
 var webService = require('./src/web-service');
+webService.initialize(globalCache);

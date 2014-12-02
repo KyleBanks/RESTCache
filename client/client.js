@@ -89,6 +89,17 @@ RESTCache.prototype = {
     },
 
     /**
+     * Returns all of the keys from the cache
+     * @param cb
+     */
+    keys: function(cb) {
+        var $this = this;
+        $this.log("KEYS");
+
+        sendGET($this.serverUrl, "/keys", cb);
+    },
+
+    /**
      * Outputs a log message at INFO level if debug is enabled
      * @param message
      */

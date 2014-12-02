@@ -2,7 +2,7 @@
     "name": "RESTCache",
     "version": "0.0.1",
     "bin": {
-        "restcache" : "./rc.js"
+        "restcache" : "./server.js"
     },
     "dependencies": {
         "express": "4.10.*",

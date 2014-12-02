@@ -13,7 +13,11 @@ var express = require('express');
 var Config = require('../conf/config');
 var bodyParser = require('body-parser');
 var log = require('./log');
-var cache = require("./cache");
+
+/**
+ * Global cache reference
+ */
+var cache = null;
 
 /**
  * Server setup
@@ -67,7 +71,6 @@ app.get("/del", function(req, res) {
     var query = req.query;
 
     // Retrieve the values for each key
-    var values = [];
     for (var key in query) {
         cache.del(key);
     }
@@ -76,6 +79,19 @@ app.get("/del", function(req, res) {
     res.json(standardSuccessResponse);
 });
 
+// Returns all of the keys in the cache. Currently doesn't support any parameters.
+app.get('/keys', function(req, res) {
+    var keys = cache.keys();
+    res.json(keys);
+});
 
 app.listen(Config.server.port);
 console.log("Listening on port " + Config.server.port);
+
+
+/**
+ * Public
+ */
+module.exports.initialize = function(globalCache) {
+    cache = globalCache;
+};

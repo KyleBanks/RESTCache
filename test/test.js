@@ -6,7 +6,7 @@
 /**
  * Imports
  */
-var RESTCache = require("../client/client");
+var RESTCache = require("../client/Client");
 var async = require('async');
 var assert = require('assert');
 
@@ -34,7 +34,8 @@ console.log("------------------------------");
 console.log("Executing all test scripts on:");
 console.log(serverUrl);
 console.log("------------------------------");
-async.parallel([
+
+async.series([
 
     /**
      * Tests single SET
@@ -59,6 +60,19 @@ async.parallel([
             assert.equal(response[0], singleValue, "GET returned the wrong value: " + singleValue + " !+ " + response[0]);
 
             console.log("GET: OK");
+            cb(null, true);
+        });
+     },
+
+    /**
+     * Tests KEYS
+     */
+     function (cb) {
+        client.keys(function(error, response) {
+            assert.equal(error, null, "KEYS returned an error: " + error);
+            assert.notEqual(response.indexOf(singleKey), -1, "KEYS didn't contain " + singleKey + " !");
+
+            console.log("KEYS: OK");
             cb(null, true);
         });
      },
@@ -124,6 +138,19 @@ async.parallel([
     },
 
     /**
+     * Tests KEYS on a deleted KEY
+     */
+    function(cb) {
+        client.keys(function(error, response) {
+            assert.equal(error, null, "KEYS (on deleted KEY) returned an error: " + error);
+            assert.equal(response.indexOf(singleKey), -1, "KEYS contained deleted key: " + singleKey + " !");
+
+            console.log("KEYS (on deleted KEY): OK");
+            cb(null, true);
+        });
+    },
+
+    /**
      * Tests GET on a deleted key
      */
     function(cb) {
@@ -149,4 +176,8 @@ async.parallel([
     console.log("------------------------------");
     console.log("All Tests: " + (isSuccessful ? "OK":"FAIL"));
     console.log("------------------------------");
+
+    if (!isSuccessful) {
+        console.log("Ensure an empty cache before running tests.");
+    }
 });

@@ -7,30 +7,62 @@
  */
 var log = require("./log");
 
-var cache = {};
+var _cache;
 
-/**
- * Set a key=value pair in the cache
- * @param key
- * @param value
- */
-module.exports.set = function(key, value) {
-    log.info("SET: [" + key+"="+value + "]");
+function Cache() {
+    _cache = {};
+}
 
-    cache[key] = value;
+Cache.prototype = {
+
+    /**
+     * Set a key=value pair in the cache
+     * @param key
+     * @param value
+     */
+    set: function(key, value) {
+        log.info("SET: [" + key+"="+value + "]");
+
+        _cache[key] = value;
+    },
+
+    /**
+     * Retrieve the value of a key=value pair from the cache
+     * @param key
+     */
+    get: function(key) {
+        log.info("GET: [" + key + "]");
+
+        return _cache[key];
+    },
+
+    /**
+     * Delete a key=pair from the cache
+     * @param key
+     */
+    del: function(key) {
+        log.info("DEL: [" + key + "]");
+
+        delete _cache[key];
+    },
+
+    /**
+     * Returns all the keys in the cache
+     */
+    keys: function() {
+        log.info("KEYS");
+
+        var keys = [];
+        for (var key in _cache) {
+            keys.push(key);
+        }
+        return keys;
+    }
+
 };
 
 /**
- * Retrieve the value of a key=value pair from the cache
+ * Public
+ * @type {Cache}
  */
-module.exports.get = function(key) {
-    log.info("GET: [" + key + "]");
-
-    return cache[key];
-};
-
-module.exports.del = function(key) {
-    log.info("DEL: [" + key + "]");
-
-    delete cache[key];
-};
+module.exports = Cache;
