@@ -26,5 +26,5 @@ if (Config.debug == true) {
 
 // Force INFO level log output
 module.exports.force = function(message) {
-    log.info(message);
+    console.log(message);
 };

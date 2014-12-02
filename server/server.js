@@ -21,5 +21,5 @@ var globalCache = new Cache();
 /**
  * Initialize the interface(s)
  */
-var webService = require('./src/web-service');
+var webService = require('./src/http-server');
 webService.initialize(globalCache);
