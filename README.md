@@ -218,3 +218,50 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
     });
 });
 ```
+
+
+### EXPIRE
+
+Sets the expiry time on a key, in milliseconds, from the time the command is received. If an existing EXPIRE time is set on the specified key, it will be overwritten with the new EXPIRE time.
+
+```node
+client.set('keyToExpire', 'valueToExpire', function(err, res) {
+
+    // equiv: /expire?keyToExpire=1000
+    client.expire('keyToExpire', 1000, function(err, res) {
+        console.log(res); // prints: [true]
+
+        setTimeout(function() {
+            client.get('keyToExpire', function(err, res) {
+                console.log(res); // prints: [null]
+            });
+        }, 1001);
+    });
+});
+```
+
+### Multi-EXPIRE
+
+Sets the expiry time on multiple keys, in milliseconds, from the time the command is received. When passing multiple keys, you must pass the same number of expire times.
+
+```node
+client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'], function(err, res) {
+
+    // equiv: /expire?keyToExpire1=1000&keyToExpire2=2500
+    client.expire(['keyToExpire1', 'keyToExpire2'], [1000, 2500], function(err, res) {
+        console.log(res); // prints: [true, true]
+
+        setTimeout(function() {
+            client.get(['keyToExpire1', 'keyToExpire2'], function(err, res) {
+                console.log(res); // prints: [null, 'valueToExpire2']
+            });
+        }, 1001);
+
+        setTimeout(function() {
+            client.get(['keyToExpire1', 'keyToExpire2'], function(err, res) {
+                console.log(res); // prints: [null, null]
+            });
+        }, 2501);
+    });
+});
+```

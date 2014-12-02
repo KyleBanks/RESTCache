@@ -144,6 +144,19 @@ app.get('/decr', function(req, res) {
     res.json(decrementedValues);
 });
 
+// Expires key(s) with given times to expire (from now) in milliseconds
+app.get("/expire", function(req, res) {
+    // Iterate over the keys and pull out each value
+    var query = req.query;
+
+    var output = [];
+    for (var key in query) {
+        output.push(cache.expire(key, query[key]));
+    }
+
+    res.json(output);
+});
+
 app.listen(Config.server.port);
 console.log("Listening on port " + Config.server.port);
 

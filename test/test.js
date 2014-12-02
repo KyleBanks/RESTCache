@@ -37,7 +37,16 @@ var singleKey = "testSetGet",
     incrMultiSetKey3 = "incr-key3",
     incrMultiSetValue1 = "1",
     incrMultiSetValue2 = "2",
-    incrMultiSetValue3 = "3";
+    incrMultiSetValue3 = "3",
+
+    expireSingleKey = "expire-knownKey",
+    expireSingleValue = "expire-knownValue",
+    expireMultiSetKey1 = "expire-key1",
+    expireMultiSetKey2 = "expire-key2",
+    expireMultiSetKey3 = "expire-key3",
+    expireMultiSetValue1 = "1",
+    expireMultiSetValue2 = "2",
+    expireMultiSetValue3 = "3";
 
 // Execute the test scripts in parallel
 console.log("------------------------------");
@@ -418,7 +427,7 @@ async.series([
      * Tests Multi-DECR with Default Increment
      * @param cb
      */
-        function(cb) {
+     function(cb) {
         client.set(
             [incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3],
             [incrMultiSetValue1, incrMultiSetValue2, incrMultiSetValue3],
@@ -437,7 +446,102 @@ async.series([
                 });
             }
         );
-    }
+     },
+
+    /**
+     * Tests EXPIRE
+     * @param cb
+     */
+     function(cb) {
+         client.set(expireSingleKey, expireSingleValue, function(error, response) {
+
+             // Set the expire time
+             client.expire(expireSingleKey, 3000, function(error, response) {
+                 assert.equal(error, null, "EXPIRE returned an error: " + error);
+                 assert.equal(response.length, 1, "EXPIRE returned the wrong number of values: " + response.length);
+                 assert.equal(response[0], true, "EXPIRE did not return true: " + response[0]);
+
+                 // Get the value before it expires
+                 client.get(expireSingleKey, function(error, response) {
+                     assert.equal(error, null, "GET after EXPIRE returned an error: " + error);
+                     assert.equal(response.length, 1, "GET after EXPIRE returned the wrong number of values: " + response.length);
+                     assert.equal(response[0], expireSingleValue, "GET after EXPIRE did not return the right value: " + response[0]);
+
+                     setTimeout(function() {
+                         // Get the value after it expires
+                         client.get(expireSingleKey, function(error, response) {
+                             assert.equal(error, null, "GET after EXPIRE Complete returned an error: " + error);
+                             assert.equal(response.length, 1, "GET after EXPIRE Complete returned the wrong number of values: " + response.length);
+                             assert.equal(response[0], null, "GET after EXPIRE Complete did not return the right value: " + response[0]);
+
+                             console.log("EXPIRE: OK");
+                             cb(null, true);
+                         });
+
+                     }, 3000);
+                 });
+             });
+
+         });
+     },
+
+    /**
+     * Tests Multi-EXPIRE
+     * @param cb
+     */
+     function(cb) {
+        client.set(
+            [expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3],
+            [expireMultiSetValue1, expireMultiSetValue2, expireMultiSetValue3],
+            function(error, response) {
+
+            // Set the expire times
+            client.expire([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], [1000, 2000, 3000], function(error, response) {
+                assert.equal(error, null, "Multi-EXPIRE returned an error: " + error);
+                assert.equal(response.length, 3, "Multi-EXPIRE returned the wrong number of values: " + response.length);
+                assert.equal(response[0], true, "Multi-EXPIRE did not return true: " + response[0]);
+                assert.equal(response[1], true, "Multi-EXPIRE did not return true: " + response[1]);
+                assert.equal(response[2], true, "Multi-EXPIRE did not return true: " + response[2]);
+
+                // Get the values before they expires
+                client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
+                    assert.equal(error, null, "GET after Multi-EXPIRE returned an error: " + error);
+                    assert.equal(response.length, 3, "GET after Multi-EXPIRE returned the wrong number of values: " + response.length);
+                    assert.equal(response[0], expireMultiSetValue1, "GET after Multi-EXPIRE did not return the right value: " + response[0]);
+                    assert.equal(response[1], expireMultiSetValue2, "GET after Multi-EXPIRE did not return the right value: " + response[1]);
+                    assert.equal(response[2], expireMultiSetValue3, "GET after Multi-EXPIRE did not return the right value: " + response[2]);
+
+                    // Check the first two keys expired
+                    setTimeout(function() {
+                        client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
+                            assert.equal(error, null, "GET after Multi-EXPIRE Complete(2) returned an error: " + error);
+                            assert.equal(response.length, 3, "GET after Multi-EXPIRE Complete(2) returned the wrong number of values: " + response.length);
+                            assert.equal(response[0], null, "GET after Multi-EXPIRE Complete(2) did not return null: " + response[0]);
+                            assert.equal(response[1], null, "GET after Multi-EXPIRE Complete(2) did not return null: " + response[1]);
+                            assert.equal(response[2], expireMultiSetValue3, "GET after Multi-EXPIRE Complete(2) returned null for non-expired key: " + response[2]);
+
+                            // Check all keys expired
+                            setTimeout(function() {
+                                client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
+                                    assert.equal(error, null, "GET after Multi-EXPIRE Complete returned an error: " + error);
+                                    assert.equal(response.length, 3, "GET after Multi-EXPIRE Complete returned the wrong number of values: " + response.length);
+                                    assert.equal(response[0], null, "GET after Multi-EXPIRE Complete did not return null: " + response[0]);
+                                    assert.equal(response[1], null, "GET after Multi-EXPIRE Complete did not return null: " + response[1]);
+                                    assert.equal(response[2], null, "GET after Multi-EXPIRE Complete did not return null: " + response[2]);
+
+                                    console.log("Multi-EXPIRE: OK");
+                                    cb(null, true);
+                                });
+
+                            }, 1001);
+                        });
+                    }, 2001);
+
+                });
+            });
+
+        });
+     }
 
 ], function (error, results) {
     // Check the results of each test to ensure all are successful

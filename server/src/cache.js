@@ -7,10 +7,12 @@
  */
 var log = require("./log");
 
-var _cache;
+var _cache,
+    _timeoutPointers;
 
 function Cache() {
     _cache = {};
+    _timeoutPointers = {};
 }
 
 Cache.prototype = {
@@ -101,7 +103,7 @@ Cache.prototype = {
      * Decrements a numeric value in the cache and returns the new value
      *
      * @param key - The key of the value to decrement, if not set, initializes the value to zero and decrement
-     * @param idecrementBy - (Optional: Default 1)
+     * @param decrementBy - (Optional: Default 1)
      * @return - Returns either the decremented value, or an Error
      */
     decr: function(key, decrementBy) {
@@ -127,8 +129,38 @@ Cache.prototype = {
         } else {
             return new Error("ERROR: Failed to SET decremented value [" + cachedValue + "] for key: " + key);
         }
-    }
+    },
 
+    /**
+     * Expires a key after timeInMillis from now has passed, modifying the existing expire time if set
+     *
+     * @param key
+     * @param timeInMillis
+     */
+    expire: function(key, timeInMillis) {
+        log.info("EXPIRE: ["+key+", "+timeInMillis+"]");
+
+        // Ensure a valid timeInMillis has been passed
+        var errorString = "ERROR: Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
+        timeInMillis = getNumericValue(timeInMillis, new Error(errorString), errorString);
+        if (timeInMillis instanceof Error) {
+            return timeInMillis;
+        }
+
+        // Check if there is an existing expire time, and if so, wipe it
+        var existingTimeoutPointer = _timeoutPointers[key];
+        if (existingTimeoutPointer != null && typeof existingTimeoutPointer !== 'undefined') {
+            clearTimeout(existingTimeoutPointer);
+        }
+
+        // Set the new expire time
+        var $this = this;
+        _timeoutPointers[key] = setTimeout(function() {
+            $this.del(key);
+        }, timeInMillis);
+
+        return true;
+    }
 };
 
 /**

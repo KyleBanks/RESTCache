@@ -124,7 +124,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=value set
+        // Now construct a proper URL formatted key=incrementBy set
         var keyValueSet;
         if (values == null) {
             keyValueSet = keys;
@@ -142,16 +142,16 @@ RESTCache.prototype = {
      * Decrements a numeric value corresponding to the key(s) passed and returns the new value(s)
      *
      * @param key
-     * @param incrementBy - Either an integer value to decrement by (for each KEY if an Array), or null to default to 1
+     * @param decrementBy - Either an integer value to decrement by (for each KEY if an Array), or null to default to 1
      * @param cb
      */
-    decr: function(key, incrementBy, cb) {
+    decr: function(key, decrementBy, cb) {
         var $this = this;
-        $this.log("DECR ["+key+", "+incrementBy+"]");
+        $this.log("DECR ["+key+", "+decrementBy+"]");
 
         // Normalize the keys
         var keys = normalizeArray(key);
-        var values = normalizeArray(incrementBy);
+        var values = normalizeArray(decrementBy);
 
         // Sanity check
         if (values != null && keys.length != values.length) {
@@ -159,7 +159,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=value set
+        // Now construct a proper URL formatted key=decrementBy set
         var keyValueSet;
         if (values == null) {
             keyValueSet = keys;
@@ -171,6 +171,34 @@ RESTCache.prototype = {
         }
 
         sendGET($this.serverUrl, "/decr?" + keyValueSet.join("&"), cb);
+    },
+
+    /**
+     * Sets an expire time on a key(s) for timeInMillis from the time the command is received
+     * @param key
+     * @param timeInMillis
+     * @param cb
+     */
+    expire: function(key, timeInMillis, cb) {
+        var $this = this;
+        $this.log("EXPIRE ["+key+", "+timeInMillis+"]");
+
+        var keys = normalizeArray(key);
+        var expireTimes = normalizeArray(timeInMillis);
+
+        // Sanity check
+        if (keys.length != expireTimes.length) {
+            cb(new Error("Length of keys must equal the length of timeInMills values."));
+            return;
+        }
+
+        // Now construct a proper URL formatted key=timeInMillis set
+        var keyValueSet = [];
+        for (var i = 0; i < keys.length; i++) {
+            keyValueSet.push(keys[i] + "=" + expireTimes[i]);
+        }
+
+        sendGET($this.serverUrl, "/expire?" + keyValueSet.join("&"), cb);
     },
 
     /**
