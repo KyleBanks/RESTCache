@@ -1,0 +1,10 @@
+{
+    "name": "RESTCache-Test-Scripts",
+    "version": "0.0.1",
+    "bin": {
+        "test-restcache" : "./test.js"
+    },
+    "dependencies": {
+        "async": "*"
+    }
+}

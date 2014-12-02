@@ -1,0 +1,11 @@
+{
+    "name": "RESTCache",
+    "version": "0.0.1",
+    "bin": {
+        "restcache" : "./rc.js"
+    },
+    "dependencies": {
+        "express": "4.10.*",
+        "body-parser": "*"
+    }
+}
