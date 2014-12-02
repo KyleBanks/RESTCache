@@ -162,7 +162,36 @@ async.series([
             console.log("Deleted GET: OK");
             cb(null, true);
         });
-    }
+    },
+
+    /**
+     * Tests a multi-DEL
+     */
+    function(cb) {
+        client.del([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
+            assert.equal(error, null, "Multi-DEL returned an error: " + error);
+            assert.equal(response.success, true, "Failed to call Multi-DEL!");
+
+            console.log("GET: OK");
+            cb(null, true);
+        });
+    },
+
+    /**
+     * Tests GET on multiple deleted keys
+     */
+     function(cb) {
+        client.get([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
+            assert.equal(error, null, "Multi-GET Deleted Key returned an error: " + error);
+            assert.equal(response.length, 3, "Multi-GET Deleted Key returned the wrong number of values: " + response.length);
+            assert.equal(response[0], null, "Multi-Get Deleted Key returned a non-null response!");
+            assert.equal(response[1], null, "Multi-Get Deleted Key returned a non-null response!");
+            assert.equal(response[2], null, "Multi-Get Deleted Key returned a non-null response!");
+
+            console.log("Deleted Multi-GET: OK");
+            cb(null, true);
+        });
+     },
 
 ], function (error, results) {
     // Check the results of each test to ensure all are successful
