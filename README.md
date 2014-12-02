@@ -11,7 +11,7 @@ This repository contains the server component of RESTCache, a Node.js client, an
 
 ```node
 cd server
-node rc.js
+node server.js
 ```
 
 ## Connect via Node.js Client
