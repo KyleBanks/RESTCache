@@ -24,6 +24,17 @@ function RESTCache(host, debug) {
 RESTCache.prototype = {
 
     /**
+     * Attempts to verify connection to the cache by sending a PING request
+     * @param cb
+     */
+    ping: function(cb) {
+        var $this = this;
+        $this.log("PING");
+
+        sendGET($this.serverUrl, "/ping", cb);
+    },
+
+    /**
      * Sets a value(s) in the cache with a specified KEY(s)
      * @param keySet
      * @param valueSet

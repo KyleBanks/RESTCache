@@ -25,18 +25,29 @@ All methods available to the Node.js client are also exposed via simple HTTP(s) 
 var RESTCache = require("restcache-client");
 var client = new RESTCache("http://localhost:7654");
 ```
+### PING
+
+The PING command verifies that you can connect to the RESTCache server.
+
+```node
+// equiv: /ping
+client.ping(function(err, res) {
+    console.log(res); // prints: ['PONG']
+});
+
+```
 
 ### SET and GET
 
 Simple SET and GET functionality. SET a String KEY and GET it.
 
 ```node
-//equiv: /set?key=value
+// equiv: /set?key=value
 client.set('key', 'value', function(err, res) {
     
-    //equiv: /get?key
+    // equiv: /get?key
     client.get('key', function(err, res) {
-        console.log(res[0]); // prints: value
+        console.log(res); // prints: ['value']
     });
 });
 ```
@@ -46,15 +57,15 @@ client.set('key', 'value', function(err, res) {
 Using the same SET and GET commands, you can also SET and Array of values with corresponding keys, or GET an Array of values by passing an Array of keys.
 
 ```node
-//equiv: /set?key1=value1&key2=value2
+// equiv: /set?key1=value1&key2=value2
 client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
     
-    //equiv: /get?key1
+    // equiv: /get?key1
     client.get('key1', function(err, res) {
         console.log(res); // prints: ['value1']
     });
     
-    //equiv: get?key1&key2
+    // equiv: get?key1&key2
     client.get(['key1', 'key2'], function(err, res) {
         console.log(res); // prints: ['value1', 'value2']
     });
@@ -66,7 +77,7 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 Delete a key/value by passing the key to the DEL command.
 
 ```node
-//equiv: /del?key
+// equiv: /del?key
 client.del('key', function(err, res) {
 
     client.get('key', function(err, res) {
@@ -80,7 +91,7 @@ client.del('key', function(err, res) {
 Delete an array of keys/values by passing an Array of keys.
 
 ```node
-//equiv: /del?key1&key2
+// equiv: /del?key1&key2
 client.del(['key1', 'key2'], function(err, res) {
 
     client.get(['key1', 'key2'], function(err, res) {
@@ -96,7 +107,7 @@ Returns a list of all keys in the cache.
 ```node
 client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 
-    //equiv: /keys
+    // equiv: /keys
     client.keys(function(err, res) {
         console.log(res); // prints: ['key1', 'key2']
     });
@@ -111,12 +122,12 @@ INCR takes an optional incrementBy value which can be used to increment by a val
 ```node
 client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 
-    //equiv: /incr?numKey1
+    // equiv: /incr?numKey1
     client.incr('numKey1', null, function(err, res) {
         console.log(res); // prints: [3]
     });
 
-    //equiv: /incr?numKey2=3
+    // equiv: /incr?numKey2=3
     client.incr('numKey2', 3, function(err, res) {
         console.log(res); // prints: [7]
     });
@@ -138,7 +149,7 @@ INCR also allows you to pass multiple keys (and optional incrementBy values).
 ```node
 client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 
-    //equiv: /incr?numKey1&numKey2
+    // equiv: /incr?numKey1&numKey2
     client.incr(['numKey1', 'numKey2'], null, function(err, res) {
         console.log(res); // prints: [3, 5]
     });
@@ -150,7 +161,7 @@ If you pass multiple keys to INCR, you must pass either the same number of incre
 ```node
 client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 
-    //equiv: /incr?numKey1=2&numKey2=4
+    // equiv: /incr?numKey1=2&numKey2=4
     client.incr(['numKey1', 'numKey2'], [2, 4], function(err, res) {
         console.log(res); // prints: [4, 8]
     });

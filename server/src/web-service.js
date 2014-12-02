@@ -28,11 +28,14 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
-var standardSuccessResponse = {success: true};
-
 /**
  * Define the routes
  */
+
+// Returns PONG
+app.get('/ping', function(req, res) {
+    res.json([cache.ping()]);
+});
 
 // Accepts any number of key=value pairs in the URL, and sets them in the cache
 app.get('/set', function(req, res) {
@@ -41,12 +44,13 @@ app.get('/set', function(req, res) {
     var keyValueSets = req.query;
 
     // For each one, set it in the cache
+    var output = [];
     for (var key in keyValueSets) {
-        cache.set(key, keyValueSets[key]);
+        output.push(cache.set(key, keyValueSets[key]));
     }
 
     // Output a success message
-    res.json(standardSuccessResponse);
+    res.json(output);
 });
 
 // Accepts any number of keys in the URL, and returns them
@@ -69,12 +73,13 @@ app.get("/del", function(req, res) {
     // Iterate over the keys and delete each value
     var query = req.query;
 
+    var output = [];
     for (var key in query) {
-        cache.del(key);
+        output.push(cache.del(key));
     }
 
     // Output a success message
-    res.json(standardSuccessResponse);
+    res.json(output);
 });
 
 // Returns all of the keys in the cache. Currently doesn't support any parameters.

@@ -16,6 +16,14 @@ function Cache() {
 Cache.prototype = {
 
     /**
+     * Returns PONG
+     * @returns {string}
+     */
+    ping: function() {
+        return "PONG";
+    },
+
+    /**
      * Set a key=value pair in the cache
      * @param key
      * @param value
@@ -24,6 +32,7 @@ Cache.prototype = {
         log.info("SET: [" + key+"="+value + "]");
 
         _cache[key] = value;
+        return true;
     },
 
     /**
@@ -44,6 +53,7 @@ Cache.prototype = {
         log.info("DEL: [" + key + "]");
 
         delete _cache[key];
+        return true;
     },
 
     /**

@@ -48,12 +48,28 @@ console.log("------------------------------");
 async.series([
 
     /**
+     * Tests PING
+     * @param cb
+     */
+     function(cb) {
+         client.ping(function(error, response) {
+             assert.equal(error, null, "PING returned an error: " + error);
+             assert.equal(response.length, 1, "PING did not return 1 response: " + response.length);
+             assert.equal(response[0], "PONG", "PING did not return PONG: " + response[0]);
+
+             console.log("PING: OK");
+             cb(null, true);
+         });
+     },
+
+    /**
      * Tests single SET
      */
      function(cb) {
         client.set(singleKey, singleValue, function(error, response) {
             assert.equal(error, null, "SET returned an error: " + error);
-            assert.equal(response.success, true, "Failed to call SET!");
+            assert.equal(response.length, 1, "SET did not return 1 response: " + response.length);
+            assert.equal(response[0], true, "Failed to call SET!");
 
             console.log("SET: OK");
             cb(null, true);
@@ -110,7 +126,10 @@ async.series([
             [multiSetValue1, multiSetValue2, multiSetValue3],
             function(error, response) {
                 assert.equal(error, null, "Multi-SET returned an error: " + error);
-                assert.equal(response.success, true, "Multi-SET command failed!");
+                assert.equal(response.length, 3, "Multi-SET returned the wrong number of responses: " + response.length);
+                assert.equal(response[0], true, "Multi-SET command failed!");
+                assert.equal(response[1], true, "Multi-SET command failed!");
+                assert.equal(response[2], true, "Multi-SET command failed!");
 
                 console.log("Multi-SET: OK");
                 cb(null, true);
@@ -140,7 +159,8 @@ async.series([
     function(cb) {
         client.del(singleKey, function(error, response) {
             assert.equal(error, null, "DEL returned an error: " + error);
-            assert.equal(response.success, true, "Failed to call DEL!");
+            assert.equal(response.length, 1, "DEL did not return 1 response: ", response.length);
+            assert.equal(response[0], true, "Failed to call DEL!");
 
             console.log("GET: OK");
             cb(null, true);
@@ -152,10 +172,10 @@ async.series([
      */
     function(cb) {
         client.keys(function(error, response) {
-            assert.equal(error, null, "KEYS (on deleted KEY) returned an error: " + error);
-            assert.equal(response.indexOf(singleKey), -1, "KEYS contained deleted key: " + singleKey + " !");
+            assert.equal(error, null, "KEYS (Deleted KEY) returned an error: " + error);
+            assert.equal(response.indexOf(singleKey), -1, "KEYS (Deleted KEY) contained the deleted key: " + singleKey + " !");
 
-            console.log("KEYS (on deleted KEY): OK");
+            console.log("KEYS (Deleted KEY): OK");
             cb(null, true);
         });
     },
@@ -180,7 +200,10 @@ async.series([
     function(cb) {
         client.del([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
             assert.equal(error, null, "Multi-DEL returned an error: " + error);
-            assert.equal(response.success, true, "Failed to call Multi-DEL!");
+            assert.equal(response.length, 3, "Multi-DEL returned the wrong number of responses: " + response.length);
+            assert.equal(response[0], true, "Failed to call Multi-DEL!");
+            assert.equal(response[1], true, "Failed to call Multi-DEL!");
+            assert.equal(response[2], true, "Failed to call Multi-DEL!");
 
             console.log("GET: OK");
             cb(null, true);
