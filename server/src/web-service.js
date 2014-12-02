@@ -157,6 +157,11 @@ app.get("/expire", function(req, res) {
     res.json(output);
 });
 
+// Returns a RANDOM key from the cache
+app.get('/random', function(req, res) {
+    res.json([cache.random()]);
+});
+
 app.listen(Config.server.port);
 console.log("Listening on port " + Config.server.port);
 

@@ -160,6 +160,21 @@ Cache.prototype = {
         }, timeInMillis);
 
         return true;
+    },
+
+    /**
+     * Returns a random key from the cache
+     */
+    random: function() {
+        log.info("RANDOM");
+
+        var cachedKeys = Object.keys(_cache);
+        if (cachedKeys.length > 0) {
+            var indexOfRandomKey = getRandomInt(0, cachedKeys.length);
+            return cachedKeys[indexOfRandomKey];
+        } else {
+            return null;
+        }
     }
 };
 
@@ -184,4 +199,8 @@ function getNumericValue(value, defaultValue, errorMessage) {
     }
 
     return value;
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

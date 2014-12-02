@@ -265,3 +265,18 @@ client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'
     });
 });
 ```
+
+
+### RANDOM
+
+Returns a RANDOM key from the cache, or NULL if the cache is empty.
+
+```node
+client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
+
+    // equiv: /random
+    client.random(function(err, res) {
+        console.log(res); // prints: one of 'key1', 'key2', or 'key3'
+    });
+});
+```

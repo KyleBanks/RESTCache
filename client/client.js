@@ -202,6 +202,17 @@ RESTCache.prototype = {
     },
 
     /**
+     * Returns a RANDOM key from the cache
+     * @param cb
+     */
+    random: function(cb) {
+        var $this = this;
+        $this.log("RANDOM");
+
+        sendGET($this.serverUrl, "/random", cb);
+    },
+
+    /**
      * Outputs a log message at INFO level if debug is enabled
      * @param message
      */

@@ -541,6 +541,27 @@ async.series([
             });
 
         });
+     },
+
+    /**
+     * Tests RANDOM
+     * @param cb
+     */
+     function(cb) {
+         // First, get a list of keys in the cache
+         client.keys(function(error, keys) {
+
+             // Get a random key and ensure it exists in the keys array
+             client.random(function(error, response) {
+                 assert.equal(error, null, "RANDOM returned an error: " + error);
+                 assert.equal(response.length, 1, "RANDOM returned the wrong number of values: " + response.length);
+                 assert.notEqual(keys.indexOf(response[0]), -1, "RANDOM returned a key that doesn't exist: [" + keys + "]  " + response[0]);
+
+                 console.log("KEYS: OK");
+                 cb(null, true);
+             });
+         });
+
      }
 
 ], function (error, results) {
