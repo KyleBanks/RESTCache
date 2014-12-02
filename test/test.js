@@ -13,7 +13,7 @@ var assert = require('assert');
 /**
  * Setup
  */
-var serverUrl = "http://localhost:7654"; // TODO: Retrieve from command-line
+var serverUrl = "http://localhost:7654"; // TODO: Retrieve from command-line args
 
 // Initialize the RESTCache client
 var client = new RESTCache(serverUrl, false);

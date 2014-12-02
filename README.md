@@ -1,11 +1,17 @@
 RESTCache
 =========
 
-RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations, with a REST style interface.
+# What's RESTCache?
+
+RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
+
+The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
+
+In addition, all commands return JSON arrays, regardless of the number of keys and/or values passed. For instance, a GET request on a single key will return an Array of length 1.
+
+# Getting Started
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
-
-# Examples
 
 ## Server
 
@@ -14,14 +20,24 @@ cd server
 node server.js
 ```
 
-## Connect via Node.js Client
-
-All methods available to the Node.js client are also exposed via simple HTTP(s) requests, as shown in the 'equiv' comments found throughout the examples.
+## Node.js Client
 
 ```node
 var RESTCache = require("restcache-client");
 var client = new RESTCache("http://localhost:7654");
 ```
+
+## Tests
+
+```node
+cd test
+node test.js
+```
+
+# Examples
+
+The following examples are demonstrated using the Node.js client, which is just a wrapper for the exposed HTTP(s) cache endpoints, as shown in the 'equiv' comments found throughout the examples.
+
 ### PING
 
 The PING command verifies that you can connect to the RESTCache server.
