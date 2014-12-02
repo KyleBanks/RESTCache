@@ -3,7 +3,7 @@ RESTCache
 
 # What is it?
 
-RESTCache is an in-memory cache that functions with a REST style interface. RESTCache is single-threaded, first come first serve cache allowing fully atomic operations.
+RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations, with a REST style interface.
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
 
