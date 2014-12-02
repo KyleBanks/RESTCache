@@ -95,6 +95,38 @@ Cache.prototype = {
         } else {
             return new Error("ERROR: Failed to SET incremented value [" + cachedValue + "] for key: " + key);
         }
+    },
+
+    /**
+     * Decrements a numeric value in the cache and returns the new value
+     *
+     * @param key - The key of the value to decrement, if not set, initializes the value to zero and decrement
+     * @param idecrementBy - (Optional: Default 1)
+     * @return - Returns either the decremented value, or an Error
+     */
+    decr: function(key, decrementBy) {
+        log.info("DECR: ["+key+", "+decrementBy+"]");
+
+        // Ensure a valid decrementBy value has been passed
+        decrementBy = getNumericValue(decrementBy, 1, "ERROR: Invalid value [" + decrementBy + "] to decrement by, must be a number.");
+        if (decrementBy instanceof Error) {
+            return decrementBy;
+        }
+
+        // If the cache doesn't contain the KEY, default it to zero
+        var cachedValue = this.get(key);
+        cachedValue = getNumericValue(this.get(key), 0, "ERROR: Invalid cached value [" + cachedValue + "] to decrement by, must be a number.");
+        if (cachedValue instanceof Error) {
+            return cachedValue;
+        }
+
+        // Decrement the value and set it in the cache
+        cachedValue -= decrementBy;
+        if (this.set(key, cachedValue)) {
+            return cachedValue;
+        } else {
+            return new Error("ERROR: Failed to SET decremented value [" + cachedValue + "] for key: " + key);
+        }
     }
 
 };

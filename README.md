@@ -134,7 +134,7 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 });
 ```
 
-Calling INCR on a missing key will initialize the key with a value of 0, and then INCR as usual.
+Calling INCR on a missing key will initialize the key with a value of 0, and then INCR as usual (to 1).
 
 ```node
 client.incr('unknownKey', null, function(err, res) {
@@ -164,6 +164,60 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
     // equiv: /incr?numKey1=2&numKey2=4
     client.incr(['numKey1', 'numKey2'], [2, 4], function(err, res) {
         console.log(res); // prints: [4, 8]
+    });
+});
+```
+
+### DECR
+
+Decrements a numeric value corresponding to the given key.
+DECR takes an optional decrementBy value which can be used to decrement by a value other than the default (1).
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    // equiv: /decr?numKey1
+    client.decr('numKey1', null, function(err, res) {
+        console.log(res); // prints: [1]
+    });
+
+    // equiv: /decr?numKey2=3
+    client.decr('numKey2', 3, function(err, res) {
+        console.log(res); // prints: [1]
+    });
+});
+```
+
+Calling DECR on a missing key will initialize the key with a value of 0, and then DECR as usual (to -1).
+
+```node
+client.incr('unknownKey', null, function(err, res) {
+    console.log(res); // prints: [1]
+});
+```
+
+### Multi-DECR
+
+DECR also allows you to pass multiple keys (and optional decrementBy values).
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    // equiv: /decr?numKey1&numKey2
+    client.decr(['numKey1', 'numKey2'], null, function(err, res) {
+        console.log(res); // prints: [1, 3]
+    });
+});
+```
+
+If you pass multiple keys to DECR, you must pass either the same number of decrementBy values, or null to default all of them to 1.
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    // equiv: /decr?numKey1=2&numKey2=4
+    client.decr(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+        console.log(res); // prints: [0, 0]
     });
 });
 ```

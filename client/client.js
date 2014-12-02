@@ -139,6 +139,41 @@ RESTCache.prototype = {
     },
 
     /**
+     * Decrements a numeric value corresponding to the key(s) passed and returns the new value(s)
+     *
+     * @param key
+     * @param incrementBy - Either an integer value to decrement by (for each KEY if an Array), or null to default to 1
+     * @param cb
+     */
+    decr: function(key, incrementBy, cb) {
+        var $this = this;
+        $this.log("DECR ["+key+", "+incrementBy+"]");
+
+        // Normalize the keys
+        var keys = normalizeArray(key);
+        var values = normalizeArray(incrementBy);
+
+        // Sanity check
+        if (values != null && keys.length != values.length) {
+            cb(new Error("Length of keys must equal the length of decrementBy values, or decrementBy values can be null."));
+            return;
+        }
+
+        // Now construct a proper URL formatted key=value set
+        var keyValueSet;
+        if (values == null) {
+            keyValueSet = keys;
+        } else {
+            keyValueSet = [];
+            for (var i = 0; i < keys.length; i++) {
+                keyValueSet.push(keys[i] + "=" + values[i]);
+            }
+        }
+
+        sendGET($this.serverUrl, "/decr?" + keyValueSet.join("&"), cb);
+    },
+
+    /**
      * Outputs a log message at INFO level if debug is enabled
      * @param message
      */

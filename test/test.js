@@ -255,7 +255,7 @@ async.series([
             assert.equal(error, null, "INCR Unknown Key returned an error: " + error);
             assert.equal(response.length, 1, "INCR Unknown Key returned the wrong number of values: " + response.length);
             assert.equal(isNaN(response[0]), false, "INCR Unknown Key did not return a numeric response");
-            assert.equal(parseInt(response[0]), 1, "INCR Unkown Key did not return 1: " + response[0]);
+            assert.equal(parseInt(response[0]), 1, "INCR Unknown Key did not return 1: " + response[0]);
 
             console.log("INCR Unknown Key: OK");
             cb(null, true);
@@ -331,7 +331,113 @@ async.series([
                 });
             }
         );
-     }
+     },
+
+    /**
+     * Tests DECR on a single key with default decrementBy value
+     * @param cb
+     */
+     function(cb) {
+        client.set(incrSingleKey, incrSingleValue, function(error, response) {
+
+            client.decr(incrSingleKey, null, function(error, response) {
+                assert.equal(error, null, "DECR Single Key (Default Value) returned an error: " + error);
+                assert.equal(response.length, 1, "DECR Single Key (Default Value) returned the wrong number of values: " + response.length);
+                assert.equal(isNaN(response[0]), false, "DECR Single Key (Default Value) did not return a numeric response: " + response[0]);
+                assert.equal(parseInt(response[0]), parseInt(incrSingleValue) - 1, "DECR Single Key (Default Value) did not return " + (parseInt(incrSingleValue) - 1) + ": " + parseInt(response[0]));
+
+                console.log("DECR Single Key (Default Value): OK");
+                cb(null, true);
+            });
+        });
+     },
+
+    /**
+     * Tests DECR on an unknown KEY
+     * @param cb
+     */
+     function(cb) {
+        client.decr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
+            assert.equal(error, null, "DECR Unknown Key returned an error: " + error);
+            assert.equal(response.length, 1, "DECR Unknown Key returned the wrong number of values: " + response.length);
+            assert.equal(isNaN(response[0]), false, "DECR Unknown Key did not return a numeric response");
+            assert.equal(parseInt(response[0]), -1, "DECR Unknown Key did not return -1: " + response[0]);
+
+            console.log("DECR Unknown Key: OK");
+            cb(null, true);
+        });
+     },
+
+    /**
+     * Tests DECR on an invalid (string) value
+     * @param cb
+     */
+     function(cb) {
+        client.set(singleKey, singleValue, function(error, response) {
+
+            client.decr(singleKey, null, function(error, response) {
+                assert.equal(error, null, "DECR Invalid Value returned an error: " + error);
+                assert.equal(response.length, 1, "DECR Invalid Value returned the wrong number of values: " + response.length);
+                assert.equal(response[0].toString().substring(0, 5), "ERROR", "DECR Invalid Value did not return an error: [" + response[0] + "]");
+
+                console.log("DECR Invalid Value: OK");
+                cb(null, true);
+            });
+        });
+     },
+
+    /**
+     * Tests Multi-DECR
+     * @param cb
+     */
+     function(cb) {
+        client.set(
+            [incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3],
+            [incrMultiSetValue1, incrMultiSetValue2, incrMultiSetValue3],
+            function(error, response) {
+
+                var incr1By = 4,
+                    incr2By = 2,
+                    incr3By = -2;
+
+                client.decr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], [incr1By, incr2By, incr3By], function(error, response) {
+                    assert.equal(error, null, "Multi-DECR returned an error: " + error);
+                    assert.equal(response.length, 3, "Multi-DECR returned the wrong number of values: " + response.length);
+                    assert.equal(response[0], parseInt(incrMultiSetValue1) - incr1By, "Multi-DECR returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
+                    assert.equal(response[1], parseInt(incrMultiSetValue2) - incr2By, "Multi-DECR returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
+                    assert.equal(response[2], parseInt(incrMultiSetValue3) - incr3By, "Multi-DECR returned the wrong value for KEY '" + incrMultiSetKey3 + "': " + response[2]);
+
+                    console.log("Multi-DECR: OK");
+                    cb(null, true);
+                });
+            }
+        );
+     },
+
+    /**
+     * Tests Multi-DECR with Default Increment
+     * @param cb
+     */
+        function(cb) {
+        client.set(
+            [incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3],
+            [incrMultiSetValue1, incrMultiSetValue2, incrMultiSetValue3],
+            function(error, response) {
+
+
+                client.decr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], null, function(error, response) {
+                    assert.equal(error, null, "Multi-DECR (Default Increment) returned an error: " + error);
+                    assert.equal(response.length, 3, "Multi-DECR (Default Increment) returned the wrong number of values: " + response.length);
+                    assert.equal(response[0], parseInt(incrMultiSetValue1) - 1, "Multi-DECR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
+                    assert.equal(response[1], parseInt(incrMultiSetValue2) - 1, "Multi-DECR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
+                    assert.equal(response[2], parseInt(incrMultiSetValue3) - 1, "Multi-DECR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey3 + "': " + response[2]);
+
+                    console.log("Multi-DECR (Default Increment): OK");
+                    cb(null, true);
+                });
+            }
+        );
+    }
 
 ], function (error, results) {
     // Check the results of each test to ensure all are successful
