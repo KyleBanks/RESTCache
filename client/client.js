@@ -10,6 +10,7 @@ var request = require("request");
  * @constructor
  */
 function RESTCache(host, debug) {
+    // Ensure the host doesn't end in '/'
     if (host.substr(-1) === "/") {
         host = host.substring(0, host.length - 2);
     }
@@ -19,7 +20,6 @@ function RESTCache(host, debug) {
 
     this.log("RESTCache initialized with host " + this.serverUrl);
 }
-module.exports = RESTCache;
 
 RESTCache.prototype = {
 
@@ -123,15 +123,8 @@ function normalizeArray(arr) {
     return normalized;
 }
 
-/**
- * Performs an HTTP(s) GET
- * @param url
- * @param path
- * @param cb
- */
+// Performs an HTTP(s) GET request
 function sendGET(url, path, cb) {
-    var $this = this;
-
     request(url + path, function (error, response, body) {
         if (error) {
             cb(error);
@@ -140,3 +133,9 @@ function sendGET(url, path, cb) {
         }
     });
 }
+
+
+/**
+ * Public
+ */
+module.exports = RESTCache;
