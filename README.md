@@ -50,3 +50,39 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
     });
 });
 ```
+
+### DEL
+```node
+//equiv: /del?key
+client.del('key', function(err, res) {
+
+    //equiv: /get?key
+    client.get('key', function(err, res) {
+        console.log(res[0]); // prints: null
+    });
+});
+```
+
+### Multi-DEL
+```node
+//equiv: /del?key1&key2
+client.del(['key1', 'key2'], function(err, res) {
+
+    //equiv: /get?key1&key2
+    client.get(['key1', 'key2'], function(err, res) {
+        console.log(res); // prints: [null, null]
+    });
+});
+```
+
+### KEYS
+```node
+//equiv: /set?key1=value1&key2=value2
+client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
+
+    //equiv: /keys
+    client.keys(function(err, res) {
+        console.log(res); // prints: ['key1', 'key2']
+    });
+});
+```
