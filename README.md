@@ -16,7 +16,7 @@ node rc.js
 
 ### Connect via Node.js Client
 ```node
-var RESTCache = require("client");
+var RESTCache = require("restcache-client");
 var client = new RESTCache("http://localhost:7654");
 ```
 
