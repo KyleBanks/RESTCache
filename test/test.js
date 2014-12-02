@@ -272,7 +272,7 @@ async.series([
              client.incr(singleKey, null, function(error, response) {
                  assert.equal(error, null, "INCR Invalid Value returned an error: " + error);
                  assert.equal(response.length, 1, "INCR Invalid Value returned the wrong number of values: " + response.length);
-                 assert.equal(response[0].toString().substring(0, 5), "ERROR", "INCR Invalid Value did not return an error: " + response[0]);
+                 assert.equal(response[0].toString().substring(0, 5), "ERROR", "INCR Invalid Value did not return an error: [" + response[0] + "]");
 
                  console.log("INCR Invalid Value: OK");
                  cb(null, true);
