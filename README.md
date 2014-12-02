@@ -1,8 +1,6 @@
 RESTCache
 =========
 
-# What is it?
-
 RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations, with a REST style interface.
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
@@ -15,7 +13,6 @@ This repository contains the server component of RESTCache, a Node.js client, an
 cd server
 node rc.js
 ```
-
 
 ## Connect via Node.js Client
 
