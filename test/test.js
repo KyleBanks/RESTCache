@@ -268,7 +268,7 @@ async.series([
              function(error, response) {
 
                  var incr1By = 4,
-                     incr2By = 8,
+                     incr2By = 2,
                      incr3By = -2;
 
                  client.incr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], [incr1By, incr2By, incr3By], function(error, response) {
@@ -283,6 +283,31 @@ async.series([
                  });
              }
          );
+     },
+
+    /**
+     * Tests Multi-INCR with Default Increment
+     * @param cb
+     */
+     function(cb) {
+        client.set(
+            [incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3],
+            [incrMultiSetValue1, incrMultiSetValue2, incrMultiSetValue3],
+            function(error, response) {
+
+
+                client.incr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], null, function(error, response) {
+                    assert.equal(error, null, "Multi-INCR (Default Increment) returned an error: " + error);
+                    assert.equal(response.length, 3, "Multi-INCR (Default Increment) returned the wrong number of values: " + response.length);
+                    assert.equal(response[0], parseInt(incrMultiSetValue1) + 1, "Multi-INCR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
+                    assert.equal(response[1], parseInt(incrMultiSetValue2) + 1, "Multi-INCR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
+                    assert.equal(response[2], parseInt(incrMultiSetValue3) + 1, "Multi-INCR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey3 + "': " + response[2]);
+
+                    console.log("Multi-INCR (Default Increment): OK");
+                    cb(null, true);
+                });
+            }
+        );
      }
 
 ], function (error, results) {

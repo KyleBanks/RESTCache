@@ -7,16 +7,20 @@ RESTCache is single-threaded, first come first serve, in-memory cache allowing f
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
 
-# Example
+# Examples
 
-### Run the Server
+## Server
 
 ```node
 cd server
 node rc.js
 ```
 
-### Connect via Node.js Client
+
+## Connect via Node.js Client
+
+All methods available to the Node.js client are also exposed via simple HTTP(s) requests, as shown in the 'equiv' comments found throughout the examples.
+
 ```node
 var RESTCache = require("restcache-client");
 var client = new RESTCache("http://localhost:7654");
@@ -50,7 +54,7 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
         console.log(res); // prints: ['value1']
     });
     
-    //equiv: gey?key1&key2
+    //equiv: get?key1&key2
     client.get(['key1', 'key2'], function(err, res) {
         console.log(res); // prints: ['value1', 'value2']
     });
@@ -65,7 +69,6 @@ Delete a key/value by passing the key to the DEL command.
 //equiv: /del?key
 client.del('key', function(err, res) {
 
-    //equiv: /get?key
     client.get('key', function(err, res) {
         console.log(res); // prints: [null]
     });
@@ -80,7 +83,6 @@ Delete an array of keys/values by passing an Array of keys.
 //equiv: /del?key1&key2
 client.del(['key1', 'key2'], function(err, res) {
 
-    //equiv: /get?key1&key2
     client.get(['key1', 'key2'], function(err, res) {
         console.log(res); // prints: [null, null]
     });
@@ -92,12 +94,65 @@ client.del(['key1', 'key2'], function(err, res) {
 Returns a list of all keys in the cache.
 
 ```node
-//equiv: /set?key1=value1&key2=value2
 client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 
     //equiv: /keys
     client.keys(function(err, res) {
         console.log(res); // prints: ['key1', 'key2']
+    });
+});
+```
+
+### INCR
+
+Increments a numeric value corresponding to the given key.
+INCR takes an optional incrementBy value which can be used to increment by a value other than the default (1).
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    //equiv: /incr?numKey1
+    client.incr('numKey1', null, function(err, res) {
+        console.log(res); // prints: [3]
+    });
+
+    //equiv: /incr?numKey2=3
+    client.incr('numKey2', 3, function(err, res) {
+        console.log(res); // prints: [7]
+    });
+});
+```
+
+Calling INCR on a missing key will initialize the key with a value of 0, and then INCR as usual.
+
+```node
+client.incr('unknownKey', null, function(err, res) {
+    console.log(res); // prints: [1]
+});
+```
+
+### Multi-INCR
+
+INCR also allows you to pass multiple keys (and optional incrementBy values).
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    //equiv: /incr?numKey1&numKey2
+    client.incr(['numKey1', 'numKey2'], null, function(err, res) {
+        console.log(res); // prints: [3, 5]
+    });
+});
+```
+
+If you pass multiple keys to INCR, you must pass either the same number of incrementBy values, or null to default all of them to 1.
+
+```node
+client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+
+    //equiv: /incr?numKey1=2&numKey2=4
+    client.incr(['numKey1', 'numKey2'], [2, 4], function(err, res) {
+        console.log(res); // prints: [4, 8]
     });
 });
 ```
