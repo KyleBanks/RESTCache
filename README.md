@@ -9,19 +9,19 @@ RESTCache is an in-memory cache that functions with a REST style interface. This
 
 ### Run the Server
 
-```
+```node
 cd server
 node rc.js
 ```
 
 ### Connect via Node.js Client
-```
+```node
 var RESTCache = require("client");
 var client = new RESTCache("http://localhost:7654");
 ```
 
-### Set a Simple key=value Pair
-```
+### SET and GET
+```node
 client.set('key', 'value', function(err, res) {
     client.get('key', function(err, res) {
         console.log(res[0]); // prints: value
@@ -29,8 +29,8 @@ client.set('key', 'value', function(err, res) {
 });
 ```
 
-### Set an Array of key=value Pairs
-```
+### Multi-SET and Multi-GET
+```node
 client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
     client.get('key1', function(err, res) {
         console.log(res[0]); // prints: value1
