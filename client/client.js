@@ -48,9 +48,8 @@ RESTCache.prototype = {
         for (var i = 0; i < keys.length; i++) {
             keyValueSet.push(keys[i] + "=" + values[i]);
         }
-        keyValueSet = keyValueSet.join("&");
 
-        sendGET($this.serverUrl, "/set?"+keyValueSet, cb);
+        sendGET($this.serverUrl, "/set?" + keyValueSet.join("&"), cb);
     },
 
     /**
@@ -64,10 +63,7 @@ RESTCache.prototype = {
         // Normalize the keys
         var keys = normalizeArray(key);
 
-        // Now construct a proper URL formatted key=value set
-        keys = keys.join("&");
-
-        sendGET($this.serverUrl, "/get?"+keys, cb);
+        sendGET($this.serverUrl, "/get?" + keys.join("&"), cb);
     },
 
     /**
@@ -82,10 +78,7 @@ RESTCache.prototype = {
         // Normalize the keys
         var keys = normalizeArray(key);
 
-        // Now construct a proper URL formatted key=value set
-        keys = keys.join("&");
-
-        sendGET($this.serverUrl, "/del?"+keys, cb);
+        sendGET($this.serverUrl, "/del?" + keys.join("&"), cb);
     },
 
     /**
@@ -97,6 +90,41 @@ RESTCache.prototype = {
         $this.log("KEYS");
 
         sendGET($this.serverUrl, "/keys", cb);
+    },
+
+    /**
+     * Increments a numeric value corresponding to the key(s) passed and returns the new value(s)
+     *
+     * @param key
+     * @param incrementBy - Either an integer value to increment by (for each KEY if an Array), or null to default to 1
+     * @param cb
+     */
+    incr: function(key, incrementBy, cb) {
+        var $this = this;
+        $this.log("INCR ["+key+", "+incrementBy+"]");
+
+        // Normalize the keys
+        var keys = normalizeArray(key);
+        var values = normalizeArray(incrementBy);
+
+        // Sanity check
+        if (values != null && keys.length != values.length) {
+            cb(new Error("Length of keys must equal the length of incrementBy values, or incrementBy values can be null."));
+            return;
+        }
+
+        // Now construct a proper URL formatted key=value set
+        var keyValueSet;
+        if (values == null) {
+            keyValueSet = keys;
+        } else {
+            keyValueSet = [];
+            for (var i = 0; i < keys.length; i++) {
+                keyValueSet.push(keys[i] + "=" + values[i]);
+            }
+        }
+
+        sendGET($this.serverUrl, "/incr?" + keyValueSet.join("&"), cb);
     },
 
     /**
@@ -122,7 +150,12 @@ function encodeString(str) {
 
 // Returns an encoded array of strings given either an array or an object
 function normalizeArray(arr) {
+    if (arr == null || typeof arr === 'undefined') {
+        return null;
+    }
+
     var normalized = [];
+
     if (arr instanceof Array) {
         for (var i = 0; i < arr.length; i++) {
             normalized.push(encodeString(arr[i]));

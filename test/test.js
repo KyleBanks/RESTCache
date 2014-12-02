@@ -27,7 +27,17 @@ var singleKey = "testSetGet",
     multiSetKey3 = "key3",
     multiSetValue1 = "1",
     multiSetValue2 = "2",
-    multiSetValue3 = "3";
+    multiSetValue3 = "3",
+
+    incrSingleKey = "incr-knownKey",
+    incrSingleValue = "10",
+    incrUnknownKey = "incr-unknownKey",
+    incrMultiSetKey1 = "incr-key1",
+    incrMultiSetKey2 = "incr-key2",
+    incrMultiSetKey3 = "incr-key3",
+    incrMultiSetValue1 = "1",
+    incrMultiSetValue2 = "2",
+    incrMultiSetValue3 = "3";
 
 // Execute the test scripts in parallel
 console.log("------------------------------");
@@ -192,6 +202,88 @@ async.series([
             cb(null, true);
         });
      },
+
+    /**
+     * Tests INCR on a single key with default incrementBy value
+     * @param cb
+     */
+     function(cb) {
+        client.set(incrSingleKey, incrSingleValue, function(error, response) {
+
+            // Test the default INCR (1)
+            client.incr(incrSingleKey, null, function(error, response) {
+                assert.equal(error, null, "INCR Single Key (Default Value) returned an error: " + error);
+                assert.equal(response.length, 1, "INCR Single Key (Default Value) returned the wrong number of values: " + response.length);
+                assert.equal(isNaN(response[0]), false, "INCR Single Key (Default Value) did not return a numeric response: " + response[0]);
+                assert.equal(parseInt(response[0]), parseInt(incrSingleValue) + 1, "INCR Single Key (Default Value) did not return " + (parseInt(incrSingleValue) + 1) + ": " + parseInt(response[0]));
+
+                console.log("INCR Single Key (Default Value): OK");
+                cb(null, true);
+            });
+        });
+     },
+
+    /**
+     * Tests INCR on an unknown KEY
+     * @param cb
+     */
+     function(cb) {
+        client.incr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
+            assert.equal(error, null, "INCR Unknown Key returned an error: " + error);
+            assert.equal(response.length, 1, "INCR Unknown Key returned the wrong number of values: " + response.length);
+            assert.equal(isNaN(response[0]), false, "INCR Unknown Key did not return a numeric response");
+            assert.equal(parseInt(response[0]), 1, "INCR Unkown Key did not return 1: " + response[0]);
+
+            console.log("INCR Unknown Key: OK");
+            cb(null, true);
+        });
+     },
+
+    /**
+     * Tests INCR on an invalid (string) value
+     * @param cb
+     */
+     function(cb) {
+         client.set(singleKey, singleValue, function(error, response) {
+
+             client.incr(singleKey, null, function(error, response) {
+                 assert.equal(error, null, "INCR Invalid Value returned an error: " + error);
+                 assert.equal(response.length, 1, "INCR Invalid Value returned the wrong number of values: " + response.length);
+                 assert.equal(response[0].toString().substring(0, 5), "ERROR", "INCR Invalid Value did not return an error: " + response[0]);
+
+                 console.log("INCR Invalid Value: OK");
+                 cb(null, true);
+             });
+         });
+     },
+
+    /**
+     * Tests Multi-INCR
+     * @param cb
+     */
+     function(cb) {
+         client.set(
+             [incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3],
+             [incrMultiSetValue1, incrMultiSetValue2, incrMultiSetValue3],
+             function(error, response) {
+
+                 var incr1By = 4,
+                     incr2By = 8,
+                     incr3By = -2;
+
+                 client.incr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], [incr1By, incr2By, incr3By], function(error, response) {
+                     assert.equal(error, null, "Multi-INCR returned an error: " + error);
+                     assert.equal(response.length, 3, "Multi-INCR returned the wrong number of values: " + response.length);
+                     assert.equal(response[0], parseInt(incrMultiSetValue1) + incr1By, "Multi-INCR returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
+                     assert.equal(response[1], parseInt(incrMultiSetValue2) + incr2By, "Multi-INCR returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
+                     assert.equal(response[2], parseInt(incrMultiSetValue3) + incr3By, "Multi-INCR returned the wrong value for KEY '" + incrMultiSetKey3 + "': " + response[2]);
+
+                     console.log("Multi-INCR: OK");
+                     cb(null, true);
+                 });
+             }
+         );
+     }
 
 ], function (error, results) {
     // Check the results of each test to ensure all are successful

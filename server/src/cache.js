@@ -52,11 +52,43 @@ Cache.prototype = {
     keys: function() {
         log.info("KEYS");
 
-        var keys = [];
-        for (var key in _cache) {
-            keys.push(key);
+        return Object.keys(_cache);
+    },
+
+    /**
+     * Increments a numeric value in the cache and returns the new value
+     *
+     * @param key - The key of the value to increment, if not set, initializes the value to zero and increment
+     * @param value - (Optional: Default 1)
+     * @return - Returns either the incremented value, or an Error
+     */
+    incr: function(key, value) {
+        log.info("INCR: ["+key+", "+value+"]");
+
+        // Ensure a valid value
+        if (value == null || typeof value === 'undefined') {
+            value = 1;
+        } else if(isNaN(value)) {
+            return new Error("ERROR: Invalid value [" + value + "] to increment by, must be a number.");
+        } else {
+            value = parseInt(value);
         }
-        return keys;
+
+        // If the cache doesn't contain the KEY, default it to zero
+        var cachedValue = this.get(key);
+        if (typeof cachedValue === 'undefined') {
+            cachedValue = 0;
+        } else if(isNaN(cachedValue)) {
+            return new Error("ERROR: Invalid existing value [" + cachedValue + "] to increment by, must be a number.");
+        } else {
+            cachedValue = parseInt(cachedValue);
+        }
+
+        // Increment the value and set it in the cache
+        cachedValue += value;
+        this.set(key, cachedValue);
+
+        return cachedValue;
     }
 
 };
