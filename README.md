@@ -3,6 +3,8 @@ RESTCache
 
 RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
 
+Aside from the HTTP interface, there are a few other things that set RESTCache apart:
+
 ## 'Multi' Commands
 
 The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
