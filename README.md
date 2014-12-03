@@ -393,7 +393,7 @@ For example, in the GET override extension above, we pulled all the keys out of 
 
 You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
 
-## <a name="config"></a>Configuration
+# <a name="config"></a>Configuration
 
 RESTCache configuration is managed by a JSON file in *server/conf/config.js*.
 
