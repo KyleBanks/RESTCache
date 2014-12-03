@@ -1,8 +1,6 @@
 RESTCache
 =========
 
-# What's RESTCache?
-
 RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
 
 ## 'Multi' Commands
