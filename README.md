@@ -307,3 +307,79 @@ client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
 
 
 # <a name="buildingExtensions"></a> Building Extensions
+
+Extensions allow you to add or override functionality to RESTCache. Any JavaScript (.js) files placed in the server/extensions directory will be treated as additional routes, and can potentially override the built-in commands.
+
+#### Example
+
+By creating and exporting a new instance of HTTPRoute, we can define a path (i.e. the URL), and implement a callback to be executed when that path is hit.
+
+In the example below, when <cache-host>/doAwesomeStuff is hit, the callback will delete 'lameKey', and set 'awesomeKey' instead.
+
+```node
+var HTTPRoute = require('../src/HTTPRoute');
+
+module.exports = new HTTPRoute('/doAwesomeStuff', function(cache, req, res) {
+    // Do something awesome...
+
+    cache.del('lameKey');
+    cache.set('awesomeKey', 'Awesome Value');
+
+    res.json([
+        cache.get('awesomeKey');
+    ]};
+});
+```
+
+While the previous example used existing cache functionality, you can also get deeper into the cache and provide new functionality, by accessing the internal cache.
+
+In the following example, we retrieve all keys from the internal cache that contain the String 'awesome', output their values, and replace them with TRUE.
+
+```node
+var HTTPRoute = require('../src/HTTPRoute');
+
+module.exports = new HTTPRoute('/getAwesome', function(cache, req, res) {
+    // Access the internal cache, a JavaScript object
+    var internalCache = cache.cache;
+
+    var awesomeVals = [];
+    for (var key in Object.keys(internalCache)) {
+        if (key.indexOf("awesome") != -1) {
+            awesomeVals.push(internalCache[key]);
+
+            internalCache[key] = true;
+        }
+    }
+
+    res.json(awesomeVals);
+});
+```
+
+In addition to implementing new functionality, you can also override the existing functions of RESTCache by providing an HTTPRoute with the same path as an existing one.
+
+For instance, if we wanted to add analytics to GET in order to determine what keys are getting the most requests:
+
+```node
+var HTTPRoute = require('../src/HTTPRoute');
+
+module.exports = new HTTPRoute('/get', function(cache, req, res) {
+
+    // Perform the standard GET
+    var values = [];
+    for (var key in query) {
+        values.push(cache.get(key));
+
+        // Add some analytics by calling INCR on another key, prefixed with accessCount:
+        cache.incr('accessCount:' + key);
+    }
+    res.json(values);
+});
+```
+
+#### Express.js
+
+RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.com), which means if you have ever used Express before, the req/res parameters to your callbacks should be familiar to you.
+
+In the GET override extension above, we pulled all the keys out of the key=value pairs in the URL (ie. /get?key=value).
+
+You have full access to the req/res objects, and it is your responsibility to ensure a response is sent.
