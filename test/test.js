@@ -561,8 +561,20 @@ async.series([
                  cb(null, true);
              });
          });
+     },
 
-     }
+    /**
+     * Tests STATS
+     * @param cb
+     */
+    function(cb) {
+        client.stats(function(error, response) {
+            assert.equal(error, null, "STATS returned an error: " + error);
+
+            console.log("STATS: OK");
+            cb(null, true);
+        });
+    }
 
 ], function (error, results) {
     // Check the results of each test to ensure all are successful

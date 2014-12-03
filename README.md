@@ -16,7 +16,7 @@ Aside from the HTTP interface, there are a few other things that set RESTCache a
 
 The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
 
-In addition, all commands return JSON arrays, regardless of the number of keys and/or values passed. For instance, a GET request on a single key will return an Array of length 1.
+In addition, all commands return JSON arrays (with the exception of STATS), regardless of the number of keys and/or values passed. For instance, a GET request on a single key will return an Array of length 1.
 
 ## Extensions
 
@@ -314,6 +314,15 @@ client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
 });
 ```
 
+#### STATS
+
+Returns RESTCache system stats such as memory usage, uptime, version numbers, etc.
+
+```node
+client.stats(function(err, res) {
+    console.log(res); // prints: JSON Object containing system stats
+});
+```
 
 # <a name="buildingExtensions"></a> Building Extensions
 

@@ -173,6 +173,35 @@ Cache.prototype = {
         } else {
             return [null];
         }
+    },
+
+    /**
+     * Outputs RESTCache stats such as versions, memory usage, etc.
+     */
+    stats: function() {
+        log.info("STATS");
+
+        return {
+            cache: {
+                keyCount: Object.keys(this.cache).length
+            },
+            memory: {
+                heapTotal: process.memoryUsage().heapTotal,
+                heapUsed: process.memoryUsage().heapUsed
+            },
+            system: {
+                pid: process.pid,
+                platform: process.platform,
+                architecture: process.arch
+            },
+            versions: {
+                node: process.version,
+                dependencies: process.versions
+            },
+            misc: {
+                upTime: process.uptime() + "s"
+            }
+        };
     }
 };
 

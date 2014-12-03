@@ -213,6 +213,17 @@ RESTCache.prototype = {
     },
 
     /**
+     * Returns the RESTCache Stats
+     * @param cb
+     */
+    stats: function(cb) {
+        var $this = this;
+        $this.log("STATS");
+
+        sendGET($this.serverUrl, "/stats", cb);
+    },
+
+    /**
      * Outputs a log message at INFO level if debug is enabled
      * @param message
      */
