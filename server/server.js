@@ -1,5 +1,5 @@
 /**
- * rc.js
+ * server.js
  *
  * The main entry point of RESTCache, called to initialize the system.
  *

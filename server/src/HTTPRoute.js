@@ -9,4 +9,10 @@ function HTTPRoute(path, callback) {
     this.callback = callback;
 }
 
+HTTPRoute.prototype = {
+    equals: function(otherRoute) {
+        return this.path === otherRoute.path;
+    }
+};
+
 module.exports = HTTPRoute;
