@@ -1,6 +1,12 @@
 RESTCache
 =========
 
+Quick Links:
+- [Getting Started] (#gettingStarted)
+- [Examples] (#examples)
+- [Building Extensions] (#buildingExtensions)
+- [Configuration] (#config)
+
 RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
 
 Aside from the HTTP interface, there are a few other things that set RESTCache apart:
@@ -15,9 +21,11 @@ In addition, all commands return JSON arrays, regardless of the number of keys a
 
 RESTCache supports user extensions, allow you to create your own custom HTTP(s) actions, and to manipulate the cache however you see fit.
 
-For more on extensions, see [Building Extensions](#buildingExtensions).
+Of course, if your extension would be of use to others, feel free to create a Pull Request, and it could be brought into the core RESTCache project!
 
-# Getting Started
+For more on extensions, see [Building Extensions] (#buildingExtensions).
+
+# <a name='gettingStarted'></a>Getting Started
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
 
@@ -42,7 +50,7 @@ cd test
 node test.js
 ```
 
-# Examples
+# <a name="examples"></a>Examples
 
 The following examples are demonstrated using the Node.js client, which is just a wrapper for the exposed HTTP(s) cache endpoints, as shown in the 'equiv' comments found throughout the examples.
 
@@ -383,3 +391,10 @@ RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.c
 For example, in the GET override extension above, we pulled all the keys out of the key=value pairs in the URL (ie. /get?key=value) using req.query, which should seem familiar. We also used res.json() to output JSON responses in all of the extension examples above, but you could output HTML, or any format you desire.
 
 You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
+
+## <a name="config"></a>Configuration
+
+RESTCache configuration is managed by a JSON file in *server/conf/config.js*.
+
+- server.port: The port on which to run RESTCache (Default: 7654)
+- debug: When set to TRUE, logs all cache actions (GET, SET, etc.) and other debugging related output to console.log
