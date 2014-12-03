@@ -396,5 +396,5 @@ You have full access to the req/res objects, and it is your responsibility to en
 
 RESTCache configuration is managed by a JSON file in *server/conf/config.js*.
 
-- server.port: The port on which to run RESTCache (Default: 7654)
-- debug: When set to TRUE, logs all cache actions (GET, SET, etc.) and other debugging related output to console.log
+- ```server.port```: The port on which to run RESTCache (Default: 7654)
+- ```debug```: When set to TRUE, logs all cache actions (GET, SET, etc.) and other debugging related output to console.log
