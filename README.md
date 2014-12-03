@@ -15,7 +15,7 @@ In addition, all commands return JSON arrays, regardless of the number of keys a
 
 RESTCache supports user extensions, allow you to create your own custom HTTP(s) actions, and to manipulate the cache however you see fit.
 
-For more on extensions, see [Building Extensions](#buildingExtensions)
+For more on extensions, see [Building Extensions](#buildingExtensions).
 
 # Getting Started
 
