@@ -16,6 +16,12 @@ function Cache() {
     this.cache = {};
     this.expirePointers = {};
     this.moduleManager = null;
+
+    this.defaultExpiry = Config.cache.defaultExpiry;
+    if (isNaN(this.defaultExpiry) || this.defaultExpiry <= 0) {
+        this.defaultExpiry = null;
+    }
+    this.defaultExpireEnabled = (this.defaultExpiry != null);
 }
 
 Cache.prototype = {
@@ -37,6 +43,10 @@ Cache.prototype = {
         log.debug("SET: [" + key+"="+value + "]");
 
         this.cache[key] = value;
+
+        if (this.defaultExpireEnabled && (this.expirePointers[key] == null || this.expirePointers[key] === 'undefined')) {
+            this.expire(key, this.defaultExpiry);
+        }
         return true;
     },
 
@@ -58,6 +68,7 @@ Cache.prototype = {
         log.debug("DEL: [" + key + "]");
 
         delete this.cache[key];
+        delete this.expirePointers[key];
         return true;
     },
 

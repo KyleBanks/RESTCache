@@ -23,6 +23,16 @@ RESTCache supports automated (time interval) disk backups, and restoring from th
 
 For more on cache backups/restoration, see [Backing Up and Restoring From Disk] (#backup).
 
+#### Eager Key Expiration
+
+RESTCache eagerly removes expired keys, meaning that if you set a key to expire after 10 seconds, the key and value will be removed from memory in 10 seconds. RESTCache doesn't wait until the next call to get that key before freeing the memory that it occupies.
+
+By default, keys (and their values) live forever. In order to release keys, there are a few options:
+
+- Set the Default Expiry: In the [Cache Configuration] (#config), there is a configuration to set a default expire time for all keys.
+- Call [EXPIRE] (#expire): Set a time to expire the passed key(s)
+- Call [DEL] (#del): Instantly delete the key and it's value
+
 #### 'Multi' Commands
 
 The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
@@ -268,9 +278,9 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 });
 ```
 
-#### EXPIRE
+#### <a name="expire"></a>EXPIRE
 
-Sets the expiry time on a key, in milliseconds, from the time the command is received. If an existing EXPIRE time is set on the specified key, it will be overwritten with the new EXPIRE time.
+Sets the expiry time on a key, in milliseconds, from the time the command is received. If an existing EXPIRE time is set on the specified key, or a default expiry time has been set, it will be overwritten with the new EXPIRE time.
 
 ```node
 client.set('keyToExpire', 'valueToExpire', function(err, res) {
@@ -500,6 +510,10 @@ RESTCache configuration is managed by a JSON file in *server/conf/config.js*. Th
 #### HTTP
 
 Configurations related to the HTTP(s) interface, such as port.
+
+#### Cache
+
+Configurations specific to the cache, such as default expire time.
 
 #### Backup
 

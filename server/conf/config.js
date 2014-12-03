@@ -15,6 +15,21 @@ module.exports = {
     },
 
     /**
+     * Configurations specific to the cache
+     */
+    cache: {
+
+        /*
+         If defaultExpiry is greater-than 0, all keys will be automatically expired after the specified time in milliseconds.
+         Calling EXPIRE on a key(s) will override the defaultExpiry value.
+
+         Calling a write-action such as SET or INCR on an existing key will not overwrite the existing expiry time. In order to overwrite
+         the existing expiry time, you need to wait for the existing key to expire, or call DEL on the existing key.
+         */
+        defaultExpiry: 0
+    },
+
+    /**
      * Backup Settings: Configure automatic backups to disk
      */
     backup: {
