@@ -46,7 +46,7 @@ node test.js
 
 The following examples are demonstrated using the Node.js client, which is just a wrapper for the exposed HTTP(s) cache endpoints, as shown in the 'equiv' comments found throughout the examples.
 
-### PING
+#### PING
 
 The PING command verifies that you can connect to the RESTCache server.
 
@@ -58,7 +58,7 @@ client.ping(function(err, res) {
 
 ```
 
-### SET and GET
+#### SET and GET
 
 Simple SET and GET functionality. SET a String KEY and GET it.
 
@@ -73,7 +73,7 @@ client.set('key', 'value', function(err, res) {
 });
 ```
 
-### Multi-SET and Multi-GET
+#### Multi-SET and Multi-GET
 
 Using the same SET and GET commands, you can also SET and Array of values with corresponding keys, or GET an Array of values by passing an Array of keys.
 
@@ -93,7 +93,7 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 });
 ```
 
-### DEL
+#### DEL
 
 Delete a key/value by passing the key to the DEL command.
 
@@ -107,7 +107,7 @@ client.del('key', function(err, res) {
 });
 ```
 
-### Multi-DEL
+#### Multi-DEL
 
 Delete an array of keys/values by passing an Array of keys.
 
@@ -121,7 +121,7 @@ client.del(['key1', 'key2'], function(err, res) {
 });
 ```
 
-### KEYS
+#### KEYS
 
 Returns a list of all keys in the cache.
 
@@ -135,7 +135,7 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 });
 ```
 
-### INCR
+#### INCR
 
 Increments a numeric value corresponding to the given key.
 INCR takes an optional incrementBy value which can be used to increment by a value other than the default (1).
@@ -163,7 +163,7 @@ client.incr('unknownKey', null, function(err, res) {
 });
 ```
 
-### Multi-INCR
+#### Multi-INCR
 
 INCR also allows you to pass multiple keys (and optional incrementBy values).
 
@@ -189,7 +189,7 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 });
 ```
 
-### DECR
+#### DECR
 
 Decrements a numeric value corresponding to the given key.
 DECR takes an optional decrementBy value which can be used to decrement by a value other than the default (1).
@@ -217,7 +217,7 @@ client.incr('unknownKey', null, function(err, res) {
 });
 ```
 
-### Multi-DECR
+#### Multi-DECR
 
 DECR also allows you to pass multiple keys (and optional decrementBy values).
 
@@ -244,7 +244,7 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 ```
 
 
-### EXPIRE
+#### EXPIRE
 
 Sets the expiry time on a key, in milliseconds, from the time the command is received. If an existing EXPIRE time is set on the specified key, it will be overwritten with the new EXPIRE time.
 
@@ -264,7 +264,7 @@ client.set('keyToExpire', 'valueToExpire', function(err, res) {
 });
 ```
 
-### Multi-EXPIRE
+#### Multi-EXPIRE
 
 Sets the expiry time on multiple keys, in milliseconds, from the time the command is received. When passing multiple keys, you must pass the same number of expire times.
 
@@ -291,7 +291,7 @@ client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'
 ```
 
 
-### RANDOM
+#### RANDOM
 
 Returns a RANDOM key from the cache, or NULL if the cache is empty.
 
