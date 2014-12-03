@@ -1,13 +1,13 @@
 RESTCache
 =========
 
+RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
+
 Quick Links:
 - [Getting Started] (#gettingStarted)
 - [Examples] (#examples)
 - [Building Extensions] (#buildingExtensions)
 - [Configuration] (#config)
-
-RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
 
 Aside from the HTTP interface, there are a few other things that set RESTCache apart:
 
