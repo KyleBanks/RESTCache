@@ -7,12 +7,10 @@
  */
 var log = require("./log");
 
-var _cache,
-    _timeoutPointers;
 
 function Cache() {
-    _cache = {};
-    _timeoutPointers = {};
+    this.cache = {};
+    this.expirePointers = {};
 }
 
 Cache.prototype = {
@@ -33,7 +31,7 @@ Cache.prototype = {
     set: function(key, value) {
         log.info("SET: [" + key+"="+value + "]");
 
-        _cache[key] = value;
+        this.cache[key] = value;
         return true;
     },
 
@@ -44,7 +42,7 @@ Cache.prototype = {
     get: function(key) {
         log.info("GET: [" + key + "]");
 
-        return _cache[key];
+        return this.cache[key];
     },
 
     /**
@@ -54,7 +52,7 @@ Cache.prototype = {
     del: function(key) {
         log.info("DEL: [" + key + "]");
 
-        delete _cache[key];
+        delete this.cache[key];
         return true;
     },
 
@@ -64,7 +62,7 @@ Cache.prototype = {
     keys: function() {
         log.info("KEYS");
 
-        return Object.keys(_cache);
+        return Object.keys(this.cache);
     },
 
     /**
@@ -148,14 +146,14 @@ Cache.prototype = {
         }
 
         // Check if there is an existing expire time, and if so, wipe it
-        var existingTimeoutPointer = _timeoutPointers[key];
+        var existingTimeoutPointer = this.expirePointers[key];
         if (existingTimeoutPointer != null && typeof existingTimeoutPointer !== 'undefined') {
             clearTimeout(existingTimeoutPointer);
         }
 
         // Set the new expire time
         var $this = this;
-        _timeoutPointers[key] = setTimeout(function() {
+        this.expirePointers[key] = setTimeout(function() {
             $this.del(key);
         }, timeInMillis);
 
@@ -168,7 +166,7 @@ Cache.prototype = {
     random: function() {
         log.info("RANDOM");
 
-        var cachedKeys = Object.keys(_cache);
+        var cachedKeys = Object.keys(this.cache);
         if (cachedKeys.length > 0) {
             var indexOfRandomKey = getRandomInt(0, cachedKeys.length);
             return [cachedKeys[indexOfRandomKey]];

@@ -5,9 +5,17 @@ RESTCache
 
 RESTCache is single-threaded, first come first serve, in-memory cache allowing fully atomic operations through an HTTP(s) interface. It's built on top of Node.js, and can be used as part of your existing application, or run on a standalone server.
 
+## 'Multi' Commands
+
 The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
 
 In addition, all commands return JSON arrays, regardless of the number of keys and/or values passed. For instance, a GET request on a single key will return an Array of length 1.
+
+## Extensions
+
+RESTCache supports user extensions, allow you to create your own custom HTTP(s) actions, and to manipulate the cache however you see fit.
+
+For more on extensions, see [Building Extensions](#buildingExtensions)
 
 # Getting Started
 
@@ -296,3 +304,6 @@ client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
     });
 });
 ```
+
+
+# <a name="buildingExtensions"></a> Building Extensions
