@@ -8,6 +8,7 @@ Quick Links:
 - [Examples] (#examples)
 - [Building Extensions] (#buildingExtensions)
 - [Configuration] (#config)
+- [Contributing] (#contrib)
 
 Aside from the HTTP interface, there are a few other things that set RESTCache apart:
 
@@ -398,3 +399,11 @@ RESTCache configuration is managed by a JSON file in *server/conf/config.js*.
 
 - ```server.port```: The port on which to run RESTCache (Default: 7654)
 - ```debug```: When set to TRUE, logs all cache actions (GET, SET, etc.) and other debugging related output to console.log
+
+# <a name="contrib"></a>Contributing
+
+Contributions are welcome! 
+
+Whether it's submitting an extension to become an official RESTCache action, or completing one of the [issues] (https://github.com/KyleBanks/RESTCache/issues) from the issue tracker, Pull Requests are very much appreciated.
+
+If you find issues with RESTCache, or are interested in features/changes, please create a [new issue](https://github.com/KyleBanks/RESTCache/issues/new) in order to discuss implementation.
