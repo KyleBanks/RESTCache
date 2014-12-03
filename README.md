@@ -366,7 +366,7 @@ module.exports = new HTTPRoute('/get', function(cache, req, res) {
 
     // Perform the standard GET
     var values = [];
-    for (var key in query) {
+    for (var key in req.query) {
         values.push(cache.get(key));
 
         // Add some analytics by calling INCR on another key, prefixed with accessCount:
@@ -378,8 +378,8 @@ module.exports = new HTTPRoute('/get', function(cache, req, res) {
 
 #### Express.js
 
-RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.com), which means if you have ever used Express before, the req/res parameters to your callbacks should be familiar to you.
+RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.com), which means the req/res objects passed to your callbacks are the same as the req/res objects used in Express.js routes.
 
-In the GET override extension above, we pulled all the keys out of the key=value pairs in the URL (ie. /get?key=value).
+For example, in the GET override extension above, we pulled all the keys out of the key=value pairs in the URL (ie. /get?key=value) using req.query, which should seem familiar. We also used res.json() to output JSON responses in all of the extension examples above, but you could output HTML, or any format you desire.
 
-You have full access to the req/res objects, and it is your responsibility to ensure a response is sent.
+You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
