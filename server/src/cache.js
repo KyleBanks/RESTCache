@@ -6,11 +6,16 @@
  * Imports
  */
 var log = require("./log");
+var Config = require('../conf/Config');
 
-
+/**
+ * Cache Constructor
+ * @constructor
+ */
 function Cache() {
     this.cache = {};
     this.expirePointers = {};
+    this.moduleManager = null;
 }
 
 Cache.prototype = {
@@ -29,7 +34,7 @@ Cache.prototype = {
      * @param value
      */
     set: function(key, value) {
-        log.info("SET: [" + key+"="+value + "]");
+        log.debug("SET: [" + key+"="+value + "]");
 
         this.cache[key] = value;
         return true;
@@ -40,7 +45,7 @@ Cache.prototype = {
      * @param key
      */
     get: function(key) {
-        log.info("GET: [" + key + "]");
+        log.debug("GET: [" + key + "]");
 
         return this.cache[key];
     },
@@ -50,7 +55,7 @@ Cache.prototype = {
      * @param key
      */
     del: function(key) {
-        log.info("DEL: [" + key + "]");
+        log.debug("DEL: [" + key + "]");
 
         delete this.cache[key];
         return true;
@@ -60,7 +65,7 @@ Cache.prototype = {
      * Returns all the keys in the cache
      */
     keys: function() {
-        log.info("KEYS");
+        log.debug("KEYS");
 
         return Object.keys(this.cache);
     },
@@ -73,7 +78,7 @@ Cache.prototype = {
      * @return - Returns either the incremented value, or an Error
      */
     incr: function(key, incrementBy) {
-        log.info("INCR: ["+key+", "+incrementBy+"]");
+        log.debug("INCR: ["+key+", "+incrementBy+"]");
 
         // Ensure a valid incrementBy value has been passed
         incrementBy = getNumericValue(incrementBy, 1, "ERROR: Invalid value [" + incrementBy + "] to increment by, must be a number.");
@@ -105,7 +110,7 @@ Cache.prototype = {
      * @return - Returns either the decremented value, or an Error
      */
     decr: function(key, decrementBy) {
-        log.info("DECR: ["+key+", "+decrementBy+"]");
+        log.debug("DECR: ["+key+", "+decrementBy+"]");
 
         // Ensure a valid decrementBy value has been passed
         decrementBy = getNumericValue(decrementBy, 1, "ERROR: Invalid value [" + decrementBy + "] to decrement by, must be a number.");
@@ -136,7 +141,7 @@ Cache.prototype = {
      * @param timeInMillis
      */
     expire: function(key, timeInMillis) {
-        log.info("EXPIRE: ["+key+", "+timeInMillis+"]");
+        log.debug("EXPIRE: ["+key+", "+timeInMillis+"]");
 
         // Ensure a valid timeInMillis has been passed
         var errorString = "ERROR: Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
@@ -164,7 +169,7 @@ Cache.prototype = {
      * Returns a random key from the cache
      */
     random: function() {
-        log.info("RANDOM");
+        log.debug("RANDOM");
 
         var cachedKeys = Object.keys(this.cache);
         if (cachedKeys.length > 0) {
@@ -179,7 +184,16 @@ Cache.prototype = {
      * Outputs RESTCache stats such as versions, memory usage, etc.
      */
     stats: function() {
-        log.info("STATS");
+        var $this = this;
+        log.debug("STATS");
+
+        var backups = [];
+        if ($this.moduleManager.getBackupManager() != null && typeof $this.moduleManager.getBackupManager() !== 'undefined') {
+            var backupObjs = $this.moduleManager.getBackupManager().getBackups();
+            backupObjs.forEach(function(backup) {
+                backups.push(backup.toJSON());
+            });
+        }
 
         return {
             cache: {
@@ -200,8 +214,44 @@ Cache.prototype = {
             },
             misc: {
                 upTime: process.uptime() + "s"
-            }
+            },
+            backups: backups
         };
+    },
+
+    /**
+     * Triggers a backup and returns the name of it, if API backup is enabled
+     */
+    backup: function(cb) {
+        var $this = this;
+        log.debug("BACKUP");
+
+        if (! Config.backup.apiBackupEnabled) {
+            cb(new Error("ERROR: API Backup is not enabled."));
+        } else {
+            $this.moduleManager.getBackupManager().performBackup(function(err, res) {
+                if (err) {
+                    return cb(err);
+                } else {
+                    return cb(null, [res]);
+                }
+            });
+        }
+    },
+
+    /**
+     * Triggers a restore of the Cache to the specified backup, available via STATS
+     * @param backupKey
+     */
+    restore: function(backupKey) {
+        var $this = this;
+        log.debug("RESTORE");
+
+        if (! Config.backup.apiRestoreEnabled) {
+            return new Error("ERROR: API Restore is not enabled.");
+        } else {
+            return $this.moduleManager.getBackupManager().restoreBackup(backupKey);
+        }
     }
 };
 

@@ -224,6 +224,29 @@ RESTCache.prototype = {
     },
 
     /**
+     * Performs a backup and returns the name of the backup
+     * @param cb
+     */
+    backup: function(cb) {
+        var $this = this;
+        $this.log("BACKUP");
+
+        sendGET($this.serverUrl, "/backup", cb);
+    },
+
+    /**
+     * Performs a restore of the cache to the specified backup key. Backup keys are available via the STATS command.
+     * @param backupKey
+     * @param cb
+     */
+    restore: function(backupKey, cb) {
+        var $this = this;
+        $this.log("RESTORE");
+
+        sendGET($this.serverUrl, "/restore", cb);
+    },
+
+    /**
      * Outputs a log message at INFO level if debug is enabled
      * @param message
      */

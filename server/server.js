@@ -12,14 +12,39 @@ console.log("Initializing RESTCache...");
  * Imports
  */
 var Cache = require('./src/Cache');
+var BackupManager = require('./src/BackupManager');
+var Config = require('./conf/Config');
+var ModuleManager = require('./src/ModuleManager');
+var HttpInterface = require('./src/HttpInterface');
 
 /**
  * Initialize the cache
+ * @type {Cache}
  */
 var globalCache = new Cache();
 
 /**
- * Initialize the interface(s)
+ * Initialize the BackupManager
+ * @type {BackupManager}
  */
-var webService = require('./src/http-server');
-webService.initialize(globalCache);
+var backupManager = new BackupManager(Config.backup);
+
+/**
+ * Initialize the HttpInterface
+ */
+var httpInterface = new HttpInterface();
+
+/**
+ * Initialize the ModuleManager
+ * @type {ModuleManager}
+ */
+var moduleManager = new ModuleManager(globalCache, backupManager, httpInterface);
+
+/**
+ * Execute any initialization scripts as needed
+ */
+backupManager.initialize();
+httpInterface.initialize();
+
+
+console.log("RESTCache Started.");

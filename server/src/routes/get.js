@@ -2,9 +2,9 @@
  * GET
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute("/get", function(cache, req, res) {
+module.exports = new HttpRoute("/get", function(cache, req, res) {
     // Iterate over the keys and pull out each value
     var query = req.query;
 

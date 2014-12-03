@@ -1,18 +1,25 @@
 /**
- * Defines a HTTP(s) route to a given function
- * @param path - ex: /set
+ * HttpRoute.js
+ *
+ * Implemented in order to provide HTTP(s) access to custom cache actions.
+ *
+ */
+
+/**
+ * HttpRoute Constructor
+ * @param path - String ex: '/set'
  * @param callback - Function accepting a Cache, request, and response object. Must output an HTTP response.
  * @constructor
  */
-function HTTPRoute(path, callback) {
+function HttpRoute(path, callback) {
     this.path = path;
     this.callback = callback;
 }
 
-HTTPRoute.prototype = {
+HttpRoute.prototype = {
     equals: function(otherRoute) {
         return this.path === otherRoute.path;
     }
 };
 
-module.exports = HTTPRoute;
+module.exports = HttpRoute;

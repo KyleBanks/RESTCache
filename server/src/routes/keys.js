@@ -2,8 +2,8 @@
  * KEYS
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute('/keys', function(cache, req, res) {
+module.exports = new HttpRoute('/keys', function(cache, req, res) {
     res.json(cache.keys());
 });

@@ -2,9 +2,9 @@
  * DEL
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute("/del", function(cache, req, res) {
+module.exports = new HttpRoute("/del", function(cache, req, res) {
     // Iterate over the keys and delete each value
     var query = req.query;
 

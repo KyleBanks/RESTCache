@@ -2,7 +2,7 @@
     "name": "RESTCache-Client",
     "version": "0.0.1",
     "bin": {
-        "restcache-client" : "./Client.js"
+        "restcache-client" : "./client.js"
     },
     "dependencies": {
         "request": "*"

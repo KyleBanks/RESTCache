@@ -2,9 +2,9 @@
  * SET
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute("/set", function(cache, req, res) {
+module.exports = new HttpRoute("/set", function(cache, req, res) {
 
     // Pull out the key=value pairs
     var keyValueSets = req.query;

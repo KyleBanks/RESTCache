@@ -2,8 +2,8 @@
  * RANDOM
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute('/random', function(cache, req, res) {
+module.exports = new HttpRoute('/random', function(cache, req, res) {
     res.json(cache.random());
 });

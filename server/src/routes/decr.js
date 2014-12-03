@@ -2,9 +2,9 @@
  * DECR
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute("/decr", function(cache, req, res) {
+module.exports = new HttpRoute("/decr", function(cache, req, res) {
     // Iterate over the keys and pull out each value
     var query = req.query;
 

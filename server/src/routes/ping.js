@@ -2,8 +2,8 @@
  * PING
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute('/ping', function(cache, req, res) {
+module.exports = new HttpRoute('/ping', function(cache, req, res) {
     res.json([cache.ping()]);
 });

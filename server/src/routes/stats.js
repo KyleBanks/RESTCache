@@ -2,8 +2,8 @@
  * STATS
  */
 
-var HTTPRoute = require('../HTTPRoute');
+var HttpRoute = require('../HttpRoute');
 
-module.exports = new HTTPRoute('/stats', function(cache, req, res) {
+module.exports = new HttpRoute('/stats', function(cache, req, res) {
     res.json(cache.stats());
 });

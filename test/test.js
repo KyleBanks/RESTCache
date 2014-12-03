@@ -1,5 +1,8 @@
 /**
  * Execute ALL test scripts
+ *
+ * TODO: Currently the BACKUP and RESTORE commands cannot be tested.
+ *
  */
 
 
