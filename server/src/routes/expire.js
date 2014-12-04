@@ -6,7 +6,7 @@ var HttpRoute = require('../HttpRoute');
 
 module.exports = new HttpRoute('/expire', function(cache, req, res) {
     // Iterate over the keys and pull out each value
-    var query = req.query;
+    var query = req.keyPairs;
 
     var output = [];
     for (var key in query) {

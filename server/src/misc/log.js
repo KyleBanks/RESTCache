@@ -7,7 +7,7 @@
 /**
  * Imports
  */
-var Config = require('../conf/config');
+var Config = require('../../conf/config');
 
 /**
  * Public functions

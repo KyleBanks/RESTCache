@@ -12,9 +12,10 @@
 var express = require('express');
 var Config = require('../conf/config');
 var bodyParser = require('body-parser');
-var log = require('./log');
+var log = require('./misc/log');
 var fs = require('fs');
 var path = require('path');
+var mergeParamsMiddleware = require('./misc/merge-params');
 
 /**
  * HttpInterface Constructor
@@ -31,12 +32,15 @@ HttpInterface.prototype = {
      * Initializes and runs the HTTP(s) server, loads routes and extensions.
      */
     initialize: function() {
-        // Initialize the server
+        // Initialize the Express.js Server
         this.server = express();
+
+        // Set the middleware to use
         this.server.use(bodyParser.json());
         this.server.use(bodyParser.urlencoded({
             extended: true
         }));
+        this.server.use(mergeParamsMiddleware);
 
         // Load the routes and extensions
         this.initializeRoutesAndExtensions();
@@ -85,11 +89,12 @@ HttpInterface.prototype = {
 
         // Create the Express.js route for each HttpRoute loaded
         routes.forEach(function(route) {
-            $this.server.get(route.path, function(req, res) {
+            $this.server.all(route.path, function(req, res) {
                 route.callback($this.moduleManager.getCache(), req, res);
             });
         });
     }
+
 };
 
 /**

@@ -3,20 +3,42 @@
  */
 var request = require("request");
 
+
+/**
+ * Static Variables
+ */
+var MODE_POST = "POST",
+    MODE_GET = "GET";
+
 /**
  * Constructs a new RESTCache client
  * @param host In the format of protocol://hostname:port (ex. http://localhost:7654)
- * @param debug (Optional: default false) If enabled, logs all calls to the cache
+ * @param options
+ *      - debug: Set true to output debug logs to the console
+ *      - mode: "GET" or "POST", defaults to "POST"
  * @constructor
  */
-function RESTCache(host, debug) {
+function RESTCache(host, options) {
     // Ensure the host doesn't end in '/'
     if (host.substr(-1) === "/") {
         host = host.substring(0, host.length - 2);
     }
-
     this.serverUrl = host;
-    this.debug = debug;
+
+    // Pull out the options, with defaults
+    this.debug = false;
+    if (options.debug != null && options.debug !== 'undefined') {
+        this.debug = options.debug;
+    }
+
+    this.mode = MODE_POST;
+    if (options.mode != null && options.mode !== 'undefined') {
+        if (options.mode === MODE_GET || options.mode === MODE_POST) {
+            this.mode = options.mode;
+        } else {
+            throw new Error("ERROR: Unknown RESTCache Client Mode: " + options.mode);
+        }
+    }
 
     this.log("RESTCache initialized with host " + this.serverUrl);
 }
@@ -31,7 +53,7 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("PING");
 
-        sendGET($this.serverUrl, "/ping", cb);
+        $this.sendRequest("/ping", null, null, cb);
     },
 
     /**
@@ -54,13 +76,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=value set
-        var keyValueSet = [];
-        for (var i = 0; i < keys.length; i++) {
-            keyValueSet.push(keys[i] + "=" + values[i]);
-        }
-
-        sendGET($this.serverUrl, "/set?" + keyValueSet.join("&"), cb);
+        $this.sendRequest("/set", keys, values, cb);
     },
 
     /**
@@ -74,7 +90,7 @@ RESTCache.prototype = {
         // Normalize the keys
         var keys = normalizeArray(key);
 
-        sendGET($this.serverUrl, "/get?" + keys.join("&"), cb);
+        $this.sendRequest("/get", keys, null, cb);
     },
 
     /**
@@ -89,7 +105,7 @@ RESTCache.prototype = {
         // Normalize the keys
         var keys = normalizeArray(key);
 
-        sendGET($this.serverUrl, "/del?" + keys.join("&"), cb);
+        $this.sendRequest("/del", keys, null, cb);
     },
 
     /**
@@ -100,7 +116,7 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("KEYS");
 
-        sendGET($this.serverUrl, "/keys", cb);
+        $this.sendRequest("/keys", null, null, cb);
     },
 
     /**
@@ -124,18 +140,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=incrementBy set
-        var keyValueSet;
-        if (values == null) {
-            keyValueSet = keys;
-        } else {
-            keyValueSet = [];
-            for (var i = 0; i < keys.length; i++) {
-                keyValueSet.push(keys[i] + "=" + values[i]);
-            }
-        }
-
-        sendGET($this.serverUrl, "/incr?" + keyValueSet.join("&"), cb);
+        $this.sendRequest("/incr", keys, values, cb);
     },
 
     /**
@@ -159,18 +164,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=decrementBy set
-        var keyValueSet;
-        if (values == null) {
-            keyValueSet = keys;
-        } else {
-            keyValueSet = [];
-            for (var i = 0; i < keys.length; i++) {
-                keyValueSet.push(keys[i] + "=" + values[i]);
-            }
-        }
-
-        sendGET($this.serverUrl, "/decr?" + keyValueSet.join("&"), cb);
+        $this.sendRequest("/decr", keys, values, cb);
     },
 
     /**
@@ -192,13 +186,7 @@ RESTCache.prototype = {
             return;
         }
 
-        // Now construct a proper URL formatted key=timeInMillis set
-        var keyValueSet = [];
-        for (var i = 0; i < keys.length; i++) {
-            keyValueSet.push(keys[i] + "=" + expireTimes[i]);
-        }
-
-        sendGET($this.serverUrl, "/expire?" + keyValueSet.join("&"), cb);
+        $this.sendRequest("/expire", keys, expireTimes, cb);
     },
 
     /**
@@ -209,7 +197,7 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("RANDOM");
 
-        sendGET($this.serverUrl, "/random", cb);
+        $this.sendRequest("/random", null, null, cb);
     },
 
     /**
@@ -220,7 +208,7 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("STATS");
 
-        sendGET($this.serverUrl, "/stats", cb);
+        $this.sendRequest("/stats", null, null, cb);
     },
 
     /**
@@ -231,7 +219,7 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("BACKUP");
 
-        sendGET($this.serverUrl, "/backup", cb);
+        $this.sendRequest("/backup", null, null, cb);
     },
 
     /**
@@ -243,7 +231,83 @@ RESTCache.prototype = {
         var $this = this;
         $this.log("RESTORE");
 
-        sendGET($this.serverUrl, "/restore", cb);
+        $this.sendRequest("/random", [backupKey], null, cb);
+    },
+
+
+
+
+    /**
+     * Sends an HTTP request (GET or POST) to the RESTCache server, with an Array of key=value pairs.
+     *
+     * The key/value arrays can both be null, or values can be null, or neither can be null.
+     * If neither are null, they must be the same length.
+     *
+     * @param path - URI to request (ex: /get?key=val)
+     * @param keys - An array of URL Encoded keys (Optional)
+     * @param values - An array of URL Encoded values (Optional)
+     * @param cb - Callback to execute (Accepts Error, Response)
+     */
+    sendRequest: function(path, keys, values, cb) {
+        var $this = this;
+        var url = $this.serverUrl + path;
+
+        var keysExist = (keys != null && keys !== 'undefined'),
+            valuesExist = (values != null && values !== 'undefined');
+
+        switch ($this.mode) {
+
+            // HTTP GET
+            case MODE_GET:
+                // Check if there are key=value pairs to send out
+                if (keysExist) {
+
+                    // Construct the key=value pairs and append to the URL
+                    var keyPairs = [];
+                    for (var i = 0; i < keys.length; i++) {
+                        if (valuesExist) {
+                            keyPairs.push(keys[i]+'='+values[i]);
+                        } else {
+                            keyPairs.push(keys[i]);
+                        }
+                    }
+                    url = url + "?" + keyPairs.join("&");
+                }
+
+                request(url, function (error, response, body) {
+                    if (error) {
+                        cb(error);
+                    } else {
+                        cb(null, JSON.parse(body));
+                    }
+                });
+                break;
+
+            // HTTP POST
+            case MODE_POST:
+                // Check if there are any key=value pairs to send out
+                var postData = {};
+                if (keysExist) {
+                    for (var i = 0; i < keys.length; i++) {
+                        if (valuesExist) {
+                            postData[keys[i]] = values[i];
+                        } else {
+                            postData[keys[i]] = null;
+                        }
+                    }
+                }
+
+                request.post(url, {form: postData}, function(error, response, body) {
+                    if (error) {
+                        cb(error);
+                    } else {
+                        cb(null, JSON.parse(body));
+                    }
+                });
+                break;
+            default:
+                return cb(new Error("ERROR: Unknown mode: " + $this.mode));
+        }
     },
 
     /**
@@ -285,18 +349,6 @@ function normalizeArray(arr) {
 
     return normalized;
 }
-
-// Performs an HTTP(s) GET request
-function sendGET(url, path, cb) {
-    request(url + path, function (error, response, body) {
-        if (error) {
-            cb(error);
-        } else {
-            cb(null, JSON.parse(body));
-        }
-    });
-}
-
 
 /**
  * Public

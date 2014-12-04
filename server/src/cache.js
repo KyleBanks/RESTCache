@@ -1,13 +1,13 @@
 /**
  * Cache.js
- * 
+ *
  * Internal cache, this is where the magic happens.
  */
 
 /**
  * Imports
  */
-var log = require("./log");
+var log = require("./misc/log");
 var Config = require('../conf/Config');
 
 /**
@@ -33,6 +33,7 @@ Cache.prototype = {
      * @returns {string}
      */
     ping: function() {
+        log.debug("PING");
         return "PONG";
     },
 

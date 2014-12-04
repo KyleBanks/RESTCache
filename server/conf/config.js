@@ -84,7 +84,7 @@ module.exports = {
 
         /*
          The path (relative to where server.js is run) to the directory in which extensions
-         should loaded.
+         should be loaded.
          */
         directory: "./extensions"
     },
@@ -95,7 +95,8 @@ module.exports = {
     misc: {
 
         /*
-         When set to true, the cache will output log messages for all actions to console.log
+         When set to true, the cache will output messages for all actions to console.log, as
+         well as other initialization messages on startup.
          */
         debug: true
     }

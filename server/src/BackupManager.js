@@ -7,7 +7,7 @@
 /**
  * Imports
  */
-var log = require('./log');
+var log = require('./misc/log');
 var fs = require('fs');
 var Backup = require('./Backup');
 
