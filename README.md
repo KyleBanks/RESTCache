@@ -9,6 +9,8 @@ RESTCache is single-threaded, first come first serve, in-memory cache allowing f
 
 All of the actions available to the cache are exposed via an HTTP(s) interface, allowing you to easily integrate RESTCache with applications running on any language, framework, or platform.
 
+The RESTCache server accepts both GET and POST requests.
+
 #### Extensions
 
 RESTCache supports user extensions, allow you to create your own custom HTTP(s) actions, and to manipulate the cache however you see fit.
@@ -388,7 +390,7 @@ client.restore('backup-123.rc.bak', function(err, res) {
 
 Extensions allow you to implement or override functionality to RESTCache. Any JavaScript (.js) files placed in the server/extensions directory will be treated as additional routes, and can potentially override the built-in commands.
 
-#### Example
+#### Examples
 
 By creating and exporting a new instance of HttpRoute, we can define a path (i.e. the URL), and implement a callback to be executed when that path is hit.
 
@@ -470,7 +472,7 @@ var HttpRoute = require('../src/HttpRoute');
  */
 module.exports = new HttpRoute('/overwriteIfEquals', function(cache, req, res) {
     var newValueKey = 'newValue';
-    var newValue = req.query[newValueKey];
+    var newValue = req.keyPairs[newValueKey];
 
     var output = [];
     for (var key in req.query) {
@@ -491,9 +493,13 @@ module.exports = new HttpRoute('/overwriteIfEquals', function(cache, req, res) {
 
 RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.com), which means the req/res objects passed to your callbacks are the same as the req/res objects used in Express.js routes.
 
-For example, in the GET override extension above, we pulled all the keys out of the key=value pairs in the URL (ie. /get?key=value) using req.query, which should seem familiar. We also used res.json() to output JSON responses in all of the extension examples above, but you could output HTML, or any format you desire.
+For example, in the GET override extension above, we pulled all the keys out of the key=value pairs in the URL query-string (ie. /get?key=value) using *req.query*, which should seem familiar. We also used *res.json()* to output JSON responses in all of the extension examples above, but you could output HTML, or any format you desire.
 
 You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
+
+##### Added Middleware
+
+For the sake of convenience, RESTCache implements an Express middleware that merges all parameters into a single object, available through *req.keyPairs* (seen the *overwriteIfEquals* example above). In order to handle duplicate keys across the different parameter sets, RESTCache prioritizes the parameters in the following order: *req.params > req.body > req.query*. This means if the key 'myKey' is duplicated across all three objects, *req.keyPairs['myKey']* will return the same value as *req.params['myKey']*. Of course you still have access to the three, unmodified parameter sets.
 
 
 
