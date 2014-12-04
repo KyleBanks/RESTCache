@@ -1,4 +1,6 @@
 /**
+ * Cache.js
+ * 
  * Internal cache, this is where the magic happens.
  */
 
@@ -44,6 +46,7 @@ Cache.prototype = {
 
         this.cache[key] = value;
 
+        // If default expire time is enabled, and there is no existing expire time set on this key, set the expiry.
         if (this.defaultExpireEnabled && (this.expirePointers[key] == null || this.expirePointers[key] === 'undefined')) {
             this.expire(key, this.defaultExpiry);
         }
@@ -67,8 +70,12 @@ Cache.prototype = {
     del: function(key) {
         log.debug("DEL: [" + key + "]");
 
+        // Delete the key/value from the cache
         delete this.cache[key];
+
+        // Delete any expire times set for this key
         delete this.expirePointers[key];
+
         return true;
     },
 
