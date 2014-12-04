@@ -489,15 +489,13 @@ module.exports = new HttpRoute('/overwriteIfEquals', function(cache, req, res) {
 ```
 
 
-#### Express.js
+#### Express.js and Added Middleware
 
 RESTCache's HTTP(s) interface is built on top of [Express.js](http://expressjs.com), which means the req/res objects passed to your callbacks are the same as the req/res objects used in Express.js routes.
 
 For example, in the GET override extension above, we pulled all the keys out of the key=value pairs in the URL query-string (ie. /get?key=value) using *req.query*, which should seem familiar. We also used *res.json()* to output JSON responses in all of the extension examples above, but you could output HTML, or any format you desire.
 
 You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
-
-##### Added Middleware
 
 For the sake of convenience, RESTCache implements an Express middleware that merges all parameters into a single object, available through *req.keyPairs* (seen the *overwriteIfEquals* example above). In order to handle duplicate keys across the different parameter sets, RESTCache prioritizes the parameters in the following order: *req.params > req.body > req.query*. This means if the key 'myKey' is duplicated across all three objects, *req.keyPairs['myKey']* will return the same value as *req.params['myKey']*. Of course you still have access to the three, unmodified parameter sets.
 
