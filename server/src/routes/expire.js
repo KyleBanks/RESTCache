@@ -2,7 +2,7 @@
  * EXPIRE
  */
 
-var HttpRoute = require('../HttpRoute');
+var HttpRoute = require('../entity/HttpRoute');
 
 module.exports = new HttpRoute('/expire', function(cache, req, res) {
     // Iterate over the keys and pull out each value

@@ -2,7 +2,8 @@
  * INCR
  */
 
-var HttpRoute = require('../HttpRoute');
+var HttpRoute = require('../entity/HttpRoute');
+var RCError = require('../entity/RCError');
 
 module.exports = new HttpRoute("/incr", function(cache, req, res) {
     // Iterate over the keys and pull out each value
@@ -23,7 +24,7 @@ module.exports = new HttpRoute("/incr", function(cache, req, res) {
         // Make the call to increment, and check the response for an error message
         var response = cache.incr(key, incrementBy);
         if (response instanceof Error) {
-            errors.push(new Error(response.message + " - At Index" + index));
+            errors.push(new RCError(response.message, index));
         } else {
             incrementedValues.push(response);
         }

@@ -43,8 +43,10 @@ The majority of commands, unless otherwise indicated, have a 'Multi' mode which 
 
 All commands return valid JSON responses, with two root elements: *errors* and *response*
 
-- *errors* contains an Array of String error messages, or an empty Array in the case of no errors.
-- *response* contains an Array of responses specific to the particular command being executed. The *response* value is always an Array, even if the command returns only one response, with the exception of [STATS] (#stats) which returns a JSON object.
+- *errors* contains an Array of *RCError* objects, or an empty Array in the case of no errors.
+    *RCError* objects contain a message (string) and an index (integer) that the error occurred at. For example, if you call an action with 5 keys and the cache failed to perform the action on the third key, the index would be 2.
+- *response* contains an Array of values specific to the particular command being executed.
+    The *response* value is always an Array, even if the command returns only one response, with the exception of [STATS] (#stats) which returns a JSON object.
 
 If you are using the Node.js client library included with RESTCache, the callback will have the error and response values split for you, as seen in the [examples] (#examples) below.
 
@@ -399,12 +401,12 @@ Extensions allow you to implement or override functionality to RESTCache. Any Ja
 
 #### Examples
 
-By creating and exporting a new instance of HttpRoute, we can define a path (i.e. the URL), and implement a callback to be executed when that path is hit. HttpRoute comes with a convenience method to generate consistent response formats across all routes and extensions. See the HttpRoutes class for more detailed information on this method.
+By creating and exporting a new instance of HttpRoute, we can define a path (i.e. the URL), and implement a callback to be executed when that path is hit. HttpRoute comes with a convenience method to generate consistent response formats across all routes and extensions, called *generateOutput*, which accepts an Array of *RCError* objects, and any value as a response, which will be converted into an Array (if not already an Array). See the HttpRoutes class for more detailed information on this method.
 
 In the example below, when *<cache-host>/doAwesomeStuff* is hit, the callback will delete 'lameKey', and set 'awesomeKey' instead.
 
 ```node
-var HttpRoute = require('../src/HttpRoute');
+var HttpRoute = require('../src/entity/HttpRoute');
 
 module.exports = new HttpRoute('/doAwesomeStuff', function(cache, req, res) {
     // Do something awesome...
@@ -422,7 +424,7 @@ While the previous example used existing cache functionality, you can also get d
 In the following example, we retrieve all keys from the internal cache that contain the String 'awesome', output their existing values, and replace them with TRUE.
 
 ```node
-var HttpRoute = require('../src/HttpRoute');
+var HttpRoute = require('../src/entity/HttpRoute');
 
 module.exports = new HttpRoute('/getAwesome', function(cache, req, res) {
     // Access the internal cache, a JavaScript object
@@ -447,7 +449,7 @@ In addition to implementing new functionality, you can also override the existin
 For instance, if we wanted to add analytics to GET in order to determine what keys are getting the most requests:
 
 ```node
-var HttpRoute = require('../src/HttpRoute');
+var HttpRoute = require('../src/entity/HttpRoute');
 
 module.exports = new HttpRoute('/get', function(cache, req, res) {
 
@@ -470,7 +472,7 @@ The most powerful use-case for custom Extensions is to batch together common seq
 In the following example, we can pass multiple key=value pairs to overwrite with a new value, only if the cached value is equal to the value we pass for each key.
 
 ```node
-var HttpRoute = require('../src/HttpRoute');
+var HttpRoute = require('../src/entity/HttpRoute');
 
 /**
  * Sample Request: /overwriteIfEquals?key1=value1&key2=value2&newValue=atomicallyAwesome
@@ -508,7 +510,6 @@ For example, in the GET override extension above, we pulled all the keys out of 
 You have full access to the req/res objects, and it is your responsibility to ensure a response is sent for each request.
 
 For the sake of convenience, RESTCache implements an Express middleware that merges all parameters into a single object, available through *req.keyPairs* (seen the *overwriteIfEquals* example above). In order to handle duplicate keys across the different parameter sets, RESTCache prioritizes the parameters in the following order: *req.params > req.body > req.query*. This means if the key 'myKey' is duplicated across all three objects, *req.keyPairs['myKey']* will return the same value as *req.params['myKey']*. Of course you still have access to the three, unmodified parameter sets.
-
 
 
 # <a name="backup"></a>Backing Up and Restoring From Disk

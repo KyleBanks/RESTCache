@@ -100,14 +100,14 @@ Cache.prototype = {
         log.debug("INCR: ["+key+", "+incrementBy+"]");
 
         // Ensure a valid incrementBy value has been passed
-        incrementBy = getNumericValue(incrementBy, 1, "ERROR: Invalid value [" + incrementBy + "] to increment by, must be a number.");
+        incrementBy = getNumericValue(incrementBy, 1, "Invalid value [" + incrementBy + "] to increment by, must be a number.");
         if (incrementBy instanceof Error) {
             return incrementBy;
         }
 
         // If the cache doesn't contain the KEY, default it to zero
         var cachedValue = this.get(key);
-        cachedValue = getNumericValue(this.get(key), 0, "ERROR: Invalid cached value [" + cachedValue + "] to increment by, must be a number.");
+        cachedValue = getNumericValue(this.get(key), 0, "Invalid cached value [" + cachedValue + "] to increment by, must be a number.");
         if (cachedValue instanceof Error) {
             return cachedValue;
         }
@@ -117,7 +117,7 @@ Cache.prototype = {
         if (this.set(key, cachedValue)) {
             return cachedValue;
         } else {
-            return new Error("ERROR: Failed to SET incremented value [" + cachedValue + "] for key: " + key);
+            return new Error("Failed to SET incremented value [" + cachedValue + "] for key: " + key);
         }
     },
 
@@ -132,14 +132,14 @@ Cache.prototype = {
         log.debug("DECR: ["+key+", "+decrementBy+"]");
 
         // Ensure a valid decrementBy value has been passed
-        decrementBy = getNumericValue(decrementBy, 1, "ERROR: Invalid value [" + decrementBy + "] to decrement by, must be a number.");
+        decrementBy = getNumericValue(decrementBy, 1, "Invalid value [" + decrementBy + "] to decrement by, must be a number.");
         if (decrementBy instanceof Error) {
             return decrementBy;
         }
 
         // If the cache doesn't contain the KEY, default it to zero
         var cachedValue = this.get(key);
-        cachedValue = getNumericValue(this.get(key), 0, "ERROR: Invalid cached value [" + cachedValue + "] to decrement by, must be a number.");
+        cachedValue = getNumericValue(this.get(key), 0, "Invalid cached value [" + cachedValue + "] to decrement by, must be a number.");
         if (cachedValue instanceof Error) {
             return cachedValue;
         }
@@ -149,7 +149,7 @@ Cache.prototype = {
         if (this.set(key, cachedValue)) {
             return cachedValue;
         } else {
-            return new Error("ERROR: Failed to SET decremented value [" + cachedValue + "] for key: " + key);
+            return new Error("Failed to SET decremented value [" + cachedValue + "] for key: " + key);
         }
     },
 
@@ -163,7 +163,7 @@ Cache.prototype = {
         log.debug("EXPIRE: ["+key+", "+timeInMillis+"]");
 
         // Ensure a valid timeInMillis has been passed
-        var errorString = "ERROR: Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
+        var errorString = "Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
         timeInMillis = getNumericValue(timeInMillis, new Error(errorString), errorString);
         if (timeInMillis instanceof Error) {
             return timeInMillis;
@@ -246,7 +246,7 @@ Cache.prototype = {
         log.debug("BACKUP");
 
         if (! Config.backup.apiBackupEnabled) {
-            cb(new Error("ERROR: API Backup is not enabled."));
+            cb(new Error("API Backup is not enabled."));
         } else {
             $this.moduleManager.getBackupManager().performBackup(function(err, res) {
                 if (err) {
@@ -267,7 +267,7 @@ Cache.prototype = {
         log.debug("RESTORE");
 
         if (! Config.backup.apiRestoreEnabled) {
-            return new Error("ERROR: API Restore is not enabled.");
+            return new Error("API Restore is not enabled.");
         } else {
             return $this.moduleManager.getBackupManager().restoreBackup(backupKey);
         }

@@ -21,7 +21,7 @@ HttpRoute.prototype = {
     /**
      * Generates a standard output format.
      *
-     * @param errors - Array of Error objects, or null if there were no errors
+     * @param errors - Array of RCError objects, or null if there were no errors
      * @param response - Array of responses, or a single response object in JSON Object format.
      *
      * Non-Array types (and non-Objects for response) will be converted into arrays of length 1.
@@ -41,11 +41,11 @@ HttpRoute.prototype = {
             errors = [];
         }
 
-        // Convert error objects into string representations
+        // Convert error objects into JSON representations
         var errorMessages = [];
         for (var i = 0; i < errors.length; i++) {
             var error = errors[i];
-            errorMessages.push(error.message);
+            errorMessages.push(error);
         }
         output.errors = errorMessages;
 

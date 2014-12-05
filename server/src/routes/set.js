@@ -2,7 +2,7 @@
  * SET
  */
 
-var HttpRoute = require('../HttpRoute');
+var HttpRoute = require('../entity/HttpRoute');
 
 module.exports = new HttpRoute("/set", function(cache, req, res) {
 

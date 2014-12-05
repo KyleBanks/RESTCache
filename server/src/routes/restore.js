@@ -2,25 +2,31 @@
  * RESTORE
  */
 
-var HttpRoute = require('../HttpRoute');
+var HttpRoute = require('../entity/HttpRoute');
+var RCError = require('../entity/RCError');
 
 module.exports = new HttpRoute('/restore', function(cache, req, res) {
 
     // Get the key
     var keys = Object.keys(req.keyPairs);
 
+
+    var errors = null,
+        response = null;
     // Validate that only 1 key was supplied
     if (keys.length != 1) {
-        res.json(["ERROR: RESTORE takes exactly 1 key."]);
+        errors = new RCError("RESTORE requires exactly one key.", 0);
     } else {
         // Perform the RESTORE
         var restoreRes = cache.restore(keys[0]);
 
         // Check the response
         if (restoreRes instanceof Error) {
-            res.json(this.generateOutput(restoreRes, null));
+            errors = new RCError(restoreRes.message, 0);
         } else {
-            res.json(this.generateOutput(null, restoreRes));
+            response = restoreRes;
         }
     }
+
+    res.json(this.generateOutput(errors, response));
 });

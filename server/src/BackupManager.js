@@ -9,7 +9,7 @@
  */
 var log = require('./misc/log');
 var fs = require('fs');
-var Backup = require('./Backup');
+var Backup = require('./entity/Backup');
 
 /**
  * Globals
@@ -89,7 +89,7 @@ BackupManager.prototype = {
         // Write the cache to disk
         fs.writeFile(this.directory + "/" + backupName, cacheMemory, function(err) {
             if(err) {
-                log.error("ERROR: An error occurred during cache backup: " + backupName);
+                log.error("An error occurred during cache backup: " + backupName);
                 log.error(err);
             } else {
                 log.debug("New backup created: " + backupName);
@@ -183,7 +183,7 @@ BackupManager.prototype = {
             // Parse the file as JSON, and return
             return JSON.parse(data);
         } catch (error) {
-            return new Error("ERROR: Unable to restore from backup: " + backupName);
+            return new Error("Unable to restore from backup: " + backupName);
         }
 
     },

@@ -296,6 +296,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                 client.incr(singleKey, null, function(error, response) {
                     assert.equal(error.length, 1, "INCR Invalid Value did not return an error: " + response);
+                    assert.equal(error[0].index, 0, "INCR Invalid Value returned an error at the wrong index: " + error[0]);
                     assert.equal(response.length, 0, "INCR Invalid Value returned the wrong number of values: " + response.length + ", should be 0");
 
                     console.log("INCR Invalid Value: OK");
@@ -401,6 +402,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                 client.decr(singleKey, null, function(error, response) {
                     assert.equal(error.length, 1, "DECR Invalid Value did not return an error: " + response);
+                    assert.equal(error[0].index, 0, "DECR Invalid Value returned an error at the wrong index: " + error[0]);
                     assert.equal(response.length, 0, "DECR Invalid Value returned the wrong number of values: " + response.length + ", expected 0");
 
                     console.log("DECR Invalid Value: OK");

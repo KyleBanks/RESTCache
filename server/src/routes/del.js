@@ -2,7 +2,7 @@
  * DEL
  */
 
-var HttpRoute = require('../HttpRoute');
+var HttpRoute = require('../entity/HttpRoute');
 
 module.exports = new HttpRoute("/del", function(cache, req, res) {
     // Iterate over the keys and delete each value

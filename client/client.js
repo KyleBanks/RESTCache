@@ -36,7 +36,7 @@ function RESTCache(host, options) {
         if (options.mode === MODE_GET || options.mode === MODE_POST) {
             this.mode = options.mode;
         } else {
-            throw new Error("ERROR: Unknown RESTCache Client Mode: " + options.mode);
+            throw new Error("Unknown RESTCache Client Mode: " + options.mode);
         }
     }
 
@@ -308,7 +308,7 @@ RESTCache.prototype = {
                 });
                 break;
             default:
-                return cb(new Error("ERROR: Unknown mode: " + $this.mode));
+                return cb(new Error("Unknown mode: " + $this.mode));
         }
     },
 
