@@ -14,5 +14,5 @@ module.exports = new HttpRoute("/get", function(cache, req, res) {
     }
 
     // Output the values
-    res.json(values);
+    res.json(this.generateOutput(null, values));
 });

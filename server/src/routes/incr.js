@@ -10,6 +10,8 @@ module.exports = new HttpRoute("/incr", function(cache, req, res) {
 
     // Retrieve the values for each key
     var incrementedValues = [];
+    var errors = [];
+    var index = 0;
     for (var key in query) {
 
         // Get the value to increment by, if it's set
@@ -21,12 +23,15 @@ module.exports = new HttpRoute("/incr", function(cache, req, res) {
         // Make the call to increment, and check the response for an error message
         var response = cache.incr(key, incrementBy);
         if (response instanceof Error) {
-            response = response.message;
+            errors.push(new Error(response.message + " - At Index" + index));
+        } else {
+            incrementedValues.push(response);
         }
 
-        incrementedValues.push(response);
+        index ++;
     }
 
     // Output the responses
-    res.json(incrementedValues);
+    console.log(errors);
+    res.json(this.generateOutput(errors, incrementedValues));
 });

@@ -13,5 +13,5 @@ module.exports = new HttpRoute('/expire', function(cache, req, res) {
         output.push(cache.expire(key, query[key]));
     }
 
-    res.json(output);
+    res.json(this.generateOutput(null, output));
 });

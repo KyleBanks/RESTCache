@@ -14,5 +14,5 @@ module.exports = new HttpRoute("/del", function(cache, req, res) {
     }
 
     // Output a success message
-    res.json(output);
+    res.json(this.generateOutput(null, output));
 });

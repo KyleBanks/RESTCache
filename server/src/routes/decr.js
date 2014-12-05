@@ -10,6 +10,8 @@ module.exports = new HttpRoute("/decr", function(cache, req, res) {
 
     // Retrieve the values for each key
     var decrementedValues = [];
+    var errors = [];
+    var index = 0;
     for (var key in query) {
 
         // Get the value to increment by, if it's set
@@ -21,12 +23,14 @@ module.exports = new HttpRoute("/decr", function(cache, req, res) {
         // Make the call to increment, and check the response for an error message
         var response = cache.decr(key, decrementBy);
         if (response instanceof Error) {
-            response = response.message;
+            errors.push(new Error(response.message + " - At Index" + index));
+        } else {
+            decrementedValues.push(response);
         }
 
-        decrementedValues.push(response);
+        index ++;
     }
 
     // Output the responses
-    res.json(decrementedValues);
+    res.json(this.generateOutput(errors, decrementedValues));
 });

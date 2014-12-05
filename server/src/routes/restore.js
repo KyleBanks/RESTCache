@@ -18,9 +18,9 @@ module.exports = new HttpRoute('/restore', function(cache, req, res) {
 
         // Check the response
         if (restoreRes instanceof Error) {
-            res.json([restoreRes.message]);
+            res.json(this.generateOutput(restoreRes, null));
         } else {
-            res.json([restoreRes]);
+            res.json(this.generateOutput(null, restoreRes));
         }
     }
 });

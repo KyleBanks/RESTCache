@@ -274,11 +274,12 @@ RESTCache.prototype = {
                     url = url + "?" + keyPairs.join("&");
                 }
 
-                request(url, function (error, response, body) {
+                request.get(url, function (error, response, body) {
                     if (error) {
                         cb(error);
                     } else {
-                        cb(null, JSON.parse(body));
+                        var res = JSON.parse(body);
+                        cb(res.errors, res.response);
                     }
                 });
                 break;
@@ -301,7 +302,8 @@ RESTCache.prototype = {
                     if (error) {
                         cb(error);
                     } else {
-                        cb(null, JSON.parse(body));
+                        var res = JSON.parse(body);
+                        cb(res.errors, res.response);
                     }
                 });
                 break;

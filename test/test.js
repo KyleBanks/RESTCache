@@ -3,6 +3,8 @@
  *
  * TODO: Currently the BACKUP and RESTORE commands cannot be tested.
  *
+ * Options:
+ *      -h=protocol:host:port - URL of the RESTCache server to connect to. (Optional: Defaults to "http://localhost:7654")
  */
 
 
@@ -14,10 +16,14 @@ var async = require('async');
 var assert = require('assert');
 
 /**
- * Setup
+ * Setup - Pull out command line arguments
  */
-var serverUrl = "http://localhost:7654"; // TODO: Retrieve from command-line args
-
+var serverUrl = "http://localhost:7654";
+process.argv.forEach(function (arg) {
+    if (arg.indexOf('-h=') == 0) {
+        serverUrl = arg.split("-h=")[1];
+    }
+});
 
 /**
  * Executes tests in the given request mode (POST, GET)
@@ -72,7 +78,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.ping(function(error, response) {
-                assert.equal(error, null, "PING returned an error: " + error);
+                assert.equal(error.length, 0, "PING returned an error: " + error);
                 assert.equal(response.length, 1, "PING did not return 1 response: " + response.length);
                 assert.equal(response[0], "PONG", "PING did not return PONG: " + response[0]);
 
@@ -86,7 +92,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.set(singleKey, singleValue, function(error, response) {
-                assert.equal(error, null, "SET returned an error: " + error);
+                assert.equal(error.length, 0, "SET returned an error: " + error);
                 assert.equal(response.length, 1, "SET did not return 1 response: " + response.length);
                 assert.equal(response[0], true, "Failed to call SET!");
 
@@ -100,7 +106,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.get(singleKey, function(error, response) {
-                assert.equal(error, null, "GET returned an error: " + error);
+                assert.equal(error.length, 0, "GET returned an error: " + error);
                 assert.equal(response.length, 1, "GET returned the wrong number of values: " + response.length);
                 assert.equal(response[0], singleValue, "GET returned the wrong value: " + singleValue + " != " + response[0]);
 
@@ -114,7 +120,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function (cb) {
             client.keys(function(error, response) {
-                assert.equal(error, null, "KEYS returned an error: " + error);
+                assert.equal(error.length, 0, "KEYS returned an error: " + error);
                 assert.notEqual(response.indexOf(singleKey), -1, "KEYS didn't contain " + singleKey + " !");
 
                 console.log("KEYS: OK");
@@ -127,7 +133,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.get(unknownKey, function(error, response) {
-                assert.equal(error, null, "GET Invalid Key returned an error: " + error);
+                assert.equal(error.length, 0, "GET Invalid Key returned an error: " + error);
                 assert.equal(response.length, 1, "GET Invalid Key returned the wrong number of values: " + response.length);
                 assert.equal(response[0], null, "Get Invalid Key returned a non-null response!");
 
@@ -144,7 +150,7 @@ function runTestInRequestMode(mode, testCallback) {
                 [multiSetKey1, multiSetKey2, multiSetKey3],
                 [multiSetValue1, multiSetValue2, multiSetValue3],
              function(error, response) {
-                    assert.equal(error, null, "Multi-SET returned an error: " + error);
+                    assert.equal(error.length, 0, "Multi-SET returned an error: " + error);
                     assert.equal(response.length, 3, "Multi-SET returned the wrong number of responses: " + response.length);
                     assert.equal(response[0], true, "Multi-SET command failed!");
                     assert.equal(response[1], true, "Multi-SET command failed!");
@@ -161,7 +167,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.get([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
-                assert.equal(error, null, "Multi-GET returned an error: " + error);
+                assert.equal(error.length, 0, "Multi-GET returned an error: " + error);
                 assert.equal(response.length, 3, "Multi-GET Returned the wrong number of values: " + response.length);
                 assert.equal(response[0], multiSetValue1, "Multi-GET command failed at key 1!");
                 assert.equal(response[1], multiSetValue2, "Multi-GET command failed at key 2!");
@@ -177,7 +183,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.del(singleKey, function(error, response) {
-                assert.equal(error, null, "DEL returned an error: " + error);
+                assert.equal(error.length, 0, "DEL returned an error: " + error);
                 assert.equal(response.length, 1, "DEL did not return 1 response: ", response.length);
                 assert.equal(response[0], true, "Failed to call DEL!");
 
@@ -191,7 +197,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.keys(function(error, response) {
-                assert.equal(error, null, "KEYS (Deleted KEY) returned an error: " + error);
+                assert.equal(error.length, 0, "KEYS (Deleted KEY) returned an error: " + error);
                 assert.equal(response.indexOf(singleKey), -1, "KEYS (Deleted KEY) contained the deleted key: " + singleKey + " !");
 
                 console.log("KEYS (Deleted KEY): OK");
@@ -204,7 +210,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.get(singleKey, function(error, response) {
-                assert.equal(error, null, "GET Deleted Key returned an error: " + error);
+                assert.equal(error.length, 0, "GET Deleted Key returned an error: " + error);
                 assert.equal(response.length, 1, "GET Deleted Key returned the wrong number of values: " + response.length);
                 assert.equal(response[0], null, "Get Deleted Key returned a non-null response!");
 
@@ -218,7 +224,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.del([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
-                assert.equal(error, null, "Multi-DEL returned an error: " + error);
+                assert.equal(error.length, 0, "Multi-DEL returned an error: " + error);
                 assert.equal(response.length, 3, "Multi-DEL returned the wrong number of responses: " + response.length);
                 assert.equal(response[0], true, "Failed to call Multi-DEL!");
                 assert.equal(response[1], true, "Failed to call Multi-DEL!");
@@ -234,7 +240,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.get([multiSetKey1, multiSetKey2, multiSetKey3], function(error, response) {
-                assert.equal(error, null, "Multi-GET Deleted Key returned an error: " + error);
+                assert.equal(error.length, 0, "Multi-GET Deleted Key returned an error: " + error);
                 assert.equal(response.length, 3, "Multi-GET Deleted Key returned the wrong number of values: " + response.length);
                 assert.equal(response[0], null, "Multi-Get Deleted Key returned a non-null response!");
                 assert.equal(response[1], null, "Multi-Get Deleted Key returned a non-null response!");
@@ -254,7 +260,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                 // Test the default INCR (1)
                 client.incr(incrSingleKey, null, function(error, response) {
-                    assert.equal(error, null, "INCR Single Key (Default Value) returned an error: " + error);
+                    assert.equal(error.length, 0, "INCR Single Key (Default Value) returned an error: " + error);
                     assert.equal(response.length, 1, "INCR Single Key (Default Value) returned the wrong number of values: " + response.length);
                     assert.equal(isNaN(response[0]), false, "INCR Single Key (Default Value) did not return a numeric response: " + response[0]);
                     assert.equal(parseInt(response[0]), parseInt(incrSingleValue) + 1, "INCR Single Key (Default Value) did not return " + (parseInt(incrSingleValue) + 1) + ": " + parseInt(response[0]));
@@ -271,7 +277,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.incr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
-                assert.equal(error, null, "INCR Unknown Key returned an error: " + error);
+                assert.equal(error.length, 0, "INCR Unknown Key returned an error: " + error);
                 assert.equal(response.length, 1, "INCR Unknown Key returned the wrong number of values: " + response.length);
                 assert.equal(isNaN(response[0]), false, "INCR Unknown Key did not return a numeric response");
                 assert.equal(parseInt(response[0]), 1, "INCR Unknown Key did not return 1: " + response[0]);
@@ -289,9 +295,8 @@ function runTestInRequestMode(mode, testCallback) {
             client.set(singleKey, singleValue, function(error, response) {
 
                 client.incr(singleKey, null, function(error, response) {
-                    assert.equal(error, null, "INCR Invalid Value returned an error: " + error);
-                    assert.equal(response.length, 1, "INCR Invalid Value returned the wrong number of values: " + response.length);
-                    assert.equal(response[0].toString().substring(0, 5), "ERROR", "INCR Invalid Value did not return an error: [" + response[0] + "]");
+                    assert.equal(error.length, 1, "INCR Invalid Value did not return an error: " + response);
+                    assert.equal(response.length, 0, "INCR Invalid Value returned the wrong number of values: " + response.length + ", should be 0");
 
                     console.log("INCR Invalid Value: OK");
                     cb(null, true);
@@ -314,7 +319,7 @@ function runTestInRequestMode(mode, testCallback) {
                         incr3By = -2;
 
                     client.incr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], [incr1By, incr2By, incr3By], function(error, response) {
-                        assert.equal(error, null, "Multi-INCR returned an error: " + error);
+                        assert.equal(error.length, 0, "Multi-INCR returned an error: " + error);
                         assert.equal(response.length, 3, "Multi-INCR returned the wrong number of values: " + response.length);
                         assert.equal(response[0], parseInt(incrMultiSetValue1) + incr1By, "Multi-INCR returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
                         assert.equal(response[1], parseInt(incrMultiSetValue2) + incr2By, "Multi-INCR returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
@@ -339,7 +344,7 @@ function runTestInRequestMode(mode, testCallback) {
 
 
                     client.incr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], null, function(error, response) {
-                        assert.equal(error, null, "Multi-INCR (Default Increment) returned an error: " + error);
+                        assert.equal(error.length, 0, "Multi-INCR (Default Increment) returned an error: " + error);
                         assert.equal(response.length, 3, "Multi-INCR (Default Increment) returned the wrong number of values: " + response.length);
                         assert.equal(response[0], parseInt(incrMultiSetValue1) + 1, "Multi-INCR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
                         assert.equal(response[1], parseInt(incrMultiSetValue2) + 1, "Multi-INCR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
@@ -360,7 +365,7 @@ function runTestInRequestMode(mode, testCallback) {
             client.set(incrSingleKey, incrSingleValue, function(error, response) {
 
                 client.decr(incrSingleKey, null, function(error, response) {
-                    assert.equal(error, null, "DECR Single Key (Default Value) returned an error: " + error);
+                    assert.equal(error.length, 0, "DECR Single Key (Default Value) returned an error: " + error);
                     assert.equal(response.length, 1, "DECR Single Key (Default Value) returned the wrong number of values: " + response.length);
                     assert.equal(isNaN(response[0]), false, "DECR Single Key (Default Value) did not return a numeric response: " + response[0]);
                     assert.equal(parseInt(response[0]), parseInt(incrSingleValue) - 1, "DECR Single Key (Default Value) did not return " + (parseInt(incrSingleValue) - 1) + ": " + parseInt(response[0]));
@@ -377,7 +382,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.decr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
-                assert.equal(error, null, "DECR Unknown Key returned an error: " + error);
+                assert.equal(error.length, 0, "DECR Unknown Key returned an error: " + error);
                 assert.equal(response.length, 1, "DECR Unknown Key returned the wrong number of values: " + response.length);
                 assert.equal(isNaN(response[0]), false, "DECR Unknown Key did not return a numeric response");
                 assert.equal(parseInt(response[0]), -1, "DECR Unknown Key did not return -1: " + response[0]);
@@ -395,9 +400,8 @@ function runTestInRequestMode(mode, testCallback) {
             client.set(singleKey, singleValue, function(error, response) {
 
                 client.decr(singleKey, null, function(error, response) {
-                    assert.equal(error, null, "DECR Invalid Value returned an error: " + error);
-                    assert.equal(response.length, 1, "DECR Invalid Value returned the wrong number of values: " + response.length);
-                    assert.equal(response[0].toString().substring(0, 5), "ERROR", "DECR Invalid Value did not return an error: [" + response[0] + "]");
+                    assert.equal(error.length, 1, "DECR Invalid Value did not return an error: " + response);
+                    assert.equal(response.length, 0, "DECR Invalid Value returned the wrong number of values: " + response.length + ", expected 0");
 
                     console.log("DECR Invalid Value: OK");
                     cb(null, true);
@@ -420,7 +424,7 @@ function runTestInRequestMode(mode, testCallback) {
                         incr3By = -2;
 
                     client.decr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], [incr1By, incr2By, incr3By], function(error, response) {
-                        assert.equal(error, null, "Multi-DECR returned an error: " + error);
+                        assert.equal(error.length, 0, "Multi-DECR returned an error: " + error);
                         assert.equal(response.length, 3, "Multi-DECR returned the wrong number of values: " + response.length);
                         assert.equal(response[0], parseInt(incrMultiSetValue1) - incr1By, "Multi-DECR returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
                         assert.equal(response[1], parseInt(incrMultiSetValue2) - incr2By, "Multi-DECR returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
@@ -445,7 +449,7 @@ function runTestInRequestMode(mode, testCallback) {
 
 
                     client.decr([incrMultiSetKey1, incrMultiSetKey2, incrMultiSetKey3], null, function(error, response) {
-                        assert.equal(error, null, "Multi-DECR (Default Increment) returned an error: " + error);
+                        assert.equal(error.length, 0, "Multi-DECR (Default Increment) returned an error: " + error);
                         assert.equal(response.length, 3, "Multi-DECR (Default Increment) returned the wrong number of values: " + response.length);
                         assert.equal(response[0], parseInt(incrMultiSetValue1) - 1, "Multi-DECR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey1 + "': " + response[0]);
                         assert.equal(response[1], parseInt(incrMultiSetValue2) - 1, "Multi-DECR (Default Increment) returned the wrong value for KEY '" + incrMultiSetKey2 + "': " + response[1]);
@@ -467,20 +471,20 @@ function runTestInRequestMode(mode, testCallback) {
 
                 // Set the expire time
                 client.expire(expireSingleKey, 3000, function(error, response) {
-                    assert.equal(error, null, "EXPIRE returned an error: " + error);
+                    assert.equal(error.length, 0, "EXPIRE returned an error: " + error);
                     assert.equal(response.length, 1, "EXPIRE returned the wrong number of values: " + response.length);
                     assert.equal(response[0], true, "EXPIRE did not return true: " + response[0]);
 
                     // Get the value before it expires
                     client.get(expireSingleKey, function(error, response) {
-                        assert.equal(error, null, "GET after EXPIRE returned an error: " + error);
+                        assert.equal(error.length, 0, "GET after EXPIRE returned an error: " + error);
                         assert.equal(response.length, 1, "GET after EXPIRE returned the wrong number of values: " + response.length);
                         assert.equal(response[0], expireSingleValue, "GET after EXPIRE did not return the right value: " + response[0]);
 
                         setTimeout(function() {
                             // Get the value after it expires
                             client.get(expireSingleKey, function(error, response) {
-                                assert.equal(error, null, "GET after EXPIRE Complete returned an error: " + error);
+                                assert.equal(error.length, 0, "GET after EXPIRE Complete returned an error: " + error);
                                 assert.equal(response.length, 1, "GET after EXPIRE Complete returned the wrong number of values: " + response.length);
                                 assert.equal(response[0], null, "GET after EXPIRE Complete did not return the right value: " + response[0]);
 
@@ -507,7 +511,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                     // Set the expire times
                     client.expire([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], [1000, 2000, 3000], function(error, response) {
-                        assert.equal(error, null, "Multi-EXPIRE returned an error: " + error);
+                        assert.equal(error.length, 0, "Multi-EXPIRE returned an error: " + error);
                         assert.equal(response.length, 3, "Multi-EXPIRE returned the wrong number of values: " + response.length);
                         assert.equal(response[0], true, "Multi-EXPIRE did not return true: " + response[0]);
                         assert.equal(response[1], true, "Multi-EXPIRE did not return true: " + response[1]);
@@ -515,7 +519,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                         // Get the values before they expires
                         client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
-                            assert.equal(error, null, "GET after Multi-EXPIRE returned an error: " + error);
+                            assert.equal(error.length, 0, "GET after Multi-EXPIRE returned an error: " + error);
                             assert.equal(response.length, 3, "GET after Multi-EXPIRE returned the wrong number of values: " + response.length);
                             assert.equal(response[0], expireMultiSetValue1, "GET after Multi-EXPIRE did not return the right value: " + response[0]);
                             assert.equal(response[1], expireMultiSetValue2, "GET after Multi-EXPIRE did not return the right value: " + response[1]);
@@ -524,7 +528,7 @@ function runTestInRequestMode(mode, testCallback) {
                             // Check the first two keys expired
                             setTimeout(function() {
                                 client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
-                                    assert.equal(error, null, "GET after Multi-EXPIRE Complete(2) returned an error: " + error);
+                                    assert.equal(error.length, 0, "GET after Multi-EXPIRE Complete(2) returned an error: " + error);
                                     assert.equal(response.length, 3, "GET after Multi-EXPIRE Complete(2) returned the wrong number of values: " + response.length);
                                     assert.equal(response[0], null, "GET after Multi-EXPIRE Complete(2) did not return null: " + response[0]);
                                     assert.equal(response[1], null, "GET after Multi-EXPIRE Complete(2) did not return null: " + response[1]);
@@ -533,7 +537,7 @@ function runTestInRequestMode(mode, testCallback) {
                                     // Check all keys expired
                                     setTimeout(function() {
                                         client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
-                                            assert.equal(error, null, "GET after Multi-EXPIRE Complete returned an error: " + error);
+                                            assert.equal(error.length, 0, "GET after Multi-EXPIRE Complete returned an error: " + error);
                                             assert.equal(response.length, 3, "GET after Multi-EXPIRE Complete returned the wrong number of values: " + response.length);
                                             assert.equal(response[0], null, "GET after Multi-EXPIRE Complete did not return null: " + response[0]);
                                             assert.equal(response[1], null, "GET after Multi-EXPIRE Complete did not return null: " + response[1]);
@@ -563,7 +567,7 @@ function runTestInRequestMode(mode, testCallback) {
 
                 // Get a random key and ensure it exists in the keys array
                 client.random(function(error, response) {
-                    assert.equal(error, null, "RANDOM returned an error: " + error);
+                    assert.equal(error.length, 0, "RANDOM returned an error: " + error);
                     assert.equal(response.length, 1, "RANDOM returned the wrong number of values: " + response.length);
                     assert.notEqual(keys.indexOf(response[0]), -1, "RANDOM returned a key that doesn't exist: [" + keys + "]  " + response[0]);
 
@@ -579,7 +583,7 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             client.stats(function(error, response) {
-                assert.equal(error, null, "STATS returned an error: " + error);
+                assert.equal(error.length, 0, "STATS returned an error: " + error);
 
                 console.log("STATS: OK");
                 cb(null, true);
