@@ -87,7 +87,7 @@ var client = new RESTCache("http://localhost:7654", opts);
 
 ```node
 cd test
-node test.js -h=protocol:host:port (Optional: Defaults to http://localhost:7654)
+node test.js -h=http://localhost:7654
 ```
 
 
