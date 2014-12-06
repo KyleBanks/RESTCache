@@ -69,7 +69,7 @@ All commands exposed through RESTCache can be enabled or disabled through simple
 
 This repository contains the server component of RESTCache, a Node.js client, and a test script to validate proper setup.
 
-## Server
+#### Server
 
 ```node
 cd server
@@ -77,10 +77,10 @@ npm install # Required first time only
 node server.js
 ```
 
-## Node.js Client
+#### Node.js Client
 
 ```node
-var RCClient = require("rcclient");
+var RCClient = require("./path/to/RCClient");
 
 // Optional client configuration
 var opts = {
@@ -90,7 +90,7 @@ var opts = {
 var client = new RCClient("http://localhost:7654", opts);
 ```
 
-## Tests
+#### Tests
 
 ```node
 cd test
@@ -135,6 +135,8 @@ client.set('key', 'value', function(err, res) {
 });
 ```
 
+#### Multi-SET and Multi-GET
+
 Using the same SET and GET commands, you can also SET and Array of values with corresponding keys, or GET an Array of values by passing an Array of keys.
 
 ```node
@@ -168,6 +170,8 @@ client.del('key', function(err, res) {
     });
 });
 ```
+
+#### Multi-DEL
 
 Delete an array of keys/values by passing an Array of keys.
 
@@ -227,6 +231,8 @@ client.incr('unknownKey', null, function(err, res) {
 });
 ```
 
+#### Multi-INCR
+
 INCR also allows you to pass multiple keys (and optional incrementBy values).
 
 ```node
@@ -281,6 +287,8 @@ client.decr('unknownKey', null, function(err, res) {
 });
 ```
 
+#### Multi-DECR
+
 DECR also allows you to pass multiple keys (and optional decrementBy values).
 
 ```node
@@ -327,7 +335,9 @@ client.set('keyToExpire', 'valueToExpire', function(err, res) {
 });
 ```
 
-EXPIRE allows multiple keys to be passed in the same request. When passing multiple keys, you must pass the same number of expire times.
+#### Multi-EXPIRE
+
+Sets the expiry time on multiple keys, in milliseconds, from the time the command is received. When passing multiple keys, you must pass the same number of expire times.
 
 ```node
 client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'], function(err, res) {
@@ -598,4 +608,4 @@ Contributions are welcome!
 
 Whether it's submitting an extension to become an official RESTCache action, or completing one of the [issues] (https://github.com/KyleBanks/RESTCache/issues) from the issue tracker, Pull Requests are very much appreciated.
 
-If you find issues with RESTCache, or are interested in features/changes, please create a [new issue](https://github.com/KyleBanks/RESTCache/issues/new) in order to discuss implementation.
+If you find issues with RESTCache, or are interested in features/changes, please create a [new issue] (https://github.com/KyleBanks/RESTCache/issues/new) in order to discuss implementation.
