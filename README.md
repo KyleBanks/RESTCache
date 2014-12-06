@@ -92,7 +92,7 @@ var client = new RCClient("http://localhost:7654", opts);
 
 #### Tests
 
-```node
+```bash
 cd test
 npm install # Required first time only
 node test.js -h=http://localhost:7654
