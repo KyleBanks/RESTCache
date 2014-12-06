@@ -9,6 +9,7 @@
  */
 var log = require("./misc/log");
 var Config = require('../conf/Config');
+var Package = require('../package.json');
 
 /**
  * Cache Constructor
@@ -232,6 +233,7 @@ Cache.prototype = {
                 architecture: process.arch
             },
             versions: {
+                RESTCache: Package.version,
                 node: process.version,
                 dependencies: process.versions
             },
