@@ -43,9 +43,9 @@ The majority of commands, unless otherwise indicated, have a 'Batch' mode which 
 
 All commands return valid JSON responses, with two root elements: *errors* and *response*
 
-- *errors* contains an Array of *RCError* objects, or an empty Array in the case of no errors.
+- **errors** contains an Array of *RCError* objects, or an empty Array in the case of no errors.
     *RCError* objects contain a message (string) and an index (integer) that the error occurred at. For example, if you call an action with 5 keys and the cache failed to perform the action on the third key, the index would be 2.
-- *response* contains an Array of values specific to the particular command being executed.
+- **response** contains an Array of values specific to the particular command being executed.
     The *response* value is always an Array, even if the command returns only one response.
 
 If you are using the Node.js client library included with RESTCache, the callback will have the error and response values split for you, as seen in the [examples] (#examples) below.
@@ -135,8 +135,6 @@ client.set('key', 'value', function(err, res) {
 });
 ```
 
-#### Multi-SET and Multi-GET
-
 Using the same SET and GET commands, you can also SET and Array of values with corresponding keys, or GET an Array of values by passing an Array of keys.
 
 ```node
@@ -171,9 +169,7 @@ client.del('key', function(err, res) {
 });
 ```
 
-#### Multi-DEL
-
-Delete an array of keys/values by passing an Array of keys.
+DEL also allows an Array of keys to be deleted.
 
 ```node
 // equiv: /del?key1&key2
@@ -231,8 +227,6 @@ client.incr('unknownKey', null, function(err, res) {
 });
 ```
 
-#### Multi-INCR
-
 INCR also allows you to pass multiple keys (and optional incrementBy values).
 
 ```node
@@ -287,8 +281,6 @@ client.decr('unknownKey', null, function(err, res) {
 });
 ```
 
-#### Multi-DECR
-
 DECR also allows you to pass multiple keys (and optional decrementBy values).
 
 ```node
@@ -335,9 +327,7 @@ client.set('keyToExpire', 'valueToExpire', function(err, res) {
 });
 ```
 
-#### Multi-EXPIRE
-
-Sets the expiry time on multiple keys, in milliseconds, from the time the command is received. When passing multiple keys, you must pass the same number of expire times.
+You can also EXPIRE multiple keys in the same request. When passing multiple keys, you must pass the same number of expire times.
 
 ```node
 client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'], function(err, res) {
