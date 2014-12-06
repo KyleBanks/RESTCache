@@ -80,7 +80,8 @@ BackupManager.prototype = {
         var dateStr = new Date().toISOString()
             .replace(/T/, ' ')
             .replace(/\./, ':')
-            .replace(/ /g, '_');
+            .replace(/ /g, '_')
+            .replace(/\//, ':');
         var backupName = dateStr + BACKUP_FILE_EXTENSION;
 
         // Load the cache into a String
@@ -126,6 +127,7 @@ BackupManager.prototype = {
                 continue;
             }
 
+            console.log("Removing: " + existingBackups[i].key);
             fs.unlinkSync($this.directory + "/" + existingBackups[i].key);
         }
 
@@ -161,7 +163,7 @@ BackupManager.prototype = {
 
         // Sort the backups
         backups.sort(function(a, b) {
-            a.compare(b);
+            return a.compare(b);
         });
 
         return backups;
