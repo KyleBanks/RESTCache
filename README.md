@@ -43,9 +43,9 @@ The majority of commands, unless otherwise indicated, have a 'Multi' mode which 
 
 All commands return valid JSON responses, with two root elements: *errors* and *response*
 
-- *errors* contains an Array of *RCError* objects, or an empty Array in the case of no errors.
+- **errors** contains an Array of *RCError* objects, or an empty Array in the case of no errors.
     *RCError* objects contain a message (string) and an index (integer) that the error occurred at. For example, if you call an action with 5 keys and the cache failed to perform the action on the third key, the index would be 2.
-- *response* contains an Array of values specific to the particular command being executed.
+- **response** contains an Array of values specific to the particular command being executed.
     The *response* value is always an Array, even if the command returns only one response.
 
 If you are using the Node.js client library included with RESTCache, the callback will have the error and response values split for you, as seen in the [examples] (#examples) below.
