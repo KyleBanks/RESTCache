@@ -26,12 +26,43 @@ module.exports = {
          Calling a write-action such as SET or INCR on an existing key will not overwrite the existing expiry time. In order to overwrite
          the existing expiry time, you need to wait for the existing key to expire, or call DEL on the existing key.
          */
-        defaultExpiry: 0,
+        defaultExpiry: 0
+    },
 
-        /*
-         If set to true, allows the DUMP command to be executed.
-         */
-        dumpEnabled: true
+    /**
+     * Command Settings: Configure which commands are enabled / disabled. Setting a command to TRUE enables it, and FALSE disables it.
+     *
+     * Note: Disabling commands makes them unavailable at the cache level, not the interface level. This means that disabling a command makes it unavailable to all routes
+     *       and extensions.
+     */
+    commands: {
+
+        PING: true,
+
+        SET: true,
+
+        GET: true,
+
+        DEL: true,
+
+        KEYS: false,
+
+        INCR: true,
+
+        DECR: true,
+
+        EXPIRE: true,
+
+        RANDOM: true,
+
+        STATS: false,
+
+        BACKUP: false,
+
+        RESTORE: false,
+
+        DUMP: false
+
     },
 
     /**
@@ -64,17 +95,7 @@ module.exports = {
         /*
          When set the true, the cache will be initialized to the most recent backup on startup.
          */
-        loadOnStartup: true,
-
-        /*
-         When set to true, the BACKUP action will be enabled (/backup)
-         */
-        apiBackupEnabled: false,
-
-        /*
-         When set to true, the RESTORE action will be enabled (/restore)
-         */
-        apiRestoreEnabled: false
+        loadOnStartup: true
     },
 
     /**

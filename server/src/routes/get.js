@@ -3,16 +3,24 @@
  */
 
 var HttpRoute = require('../entity/HttpRoute');
+var RCError = require('../entity/RCError');
 
 module.exports = new HttpRoute("/get", function(cache, req, res) {
     // Iterate over the keys and pull out each value
-    var query = req.keyPairs;
+    var keys = Object.keys(req.keyPairs);
 
-    var values = [];
-    for (var key in query) {
-        values.push(cache.get(key));
+    var values = [],
+        errors = [];
+    for (var i = 0 ; i < keys.length; i++) {
+        var output = cache.get(keys[i]);
+
+        if (output instanceof Error) {
+            errors.push(new RCError(output.message, i));
+        } else {
+            values.push(output);
+        }
     }
 
     // Output the values
-    res.json(this.generateOutput(null, values));
+    res.json(this.generateOutput(errors, values));
 });

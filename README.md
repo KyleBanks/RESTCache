@@ -7,13 +7,13 @@ RESTCache is single-threaded, first come first serve, in-memory cache allowing f
 
 #### HTTP(s) Interface
 
-All of the actions available to the cache are exposed via an HTTP(s) interface, allowing you to easily integrate RESTCache with applications running on any language, framework, or platform.
+All of the commands available to the cache are exposed via an HTTP(s) interface, allowing you to easily integrate RESTCache with applications running on any language, framework, or platform.
 
 The RESTCache server accepts both GET and POST requests.
 
 #### Extensions
 
-RESTCache supports user extensions, allow you to create your own custom HTTP(s) actions, and to manipulate the cache however you see fit.
+RESTCache supports user extensions, allow you to create your own custom HTTP(s) commands, and to manipulate the cache however you see fit.
 
 Of course, if your extension would be of use to others, feel free to create a Pull Request, and it could be brought into the core RESTCache project!
 
@@ -21,7 +21,7 @@ For more on extensions, see [Building Extensions] (#buildingExtensions).
 
 #### Automated and REST Based Cache Backups/Restoration
 
-RESTCache supports automated (time interval) disk backups, and restoring from the most recent backup at startup. In addition, you can use the same REST/Client API as all other actions to perform a backup on command, or restore from a specific backup of your choice.
+RESTCache supports automated (time interval) disk backups, and restoring from the most recent backup at startup. In addition, the [BACKUP] (#backup) and [RESTORE] (#restore) commands are available through the HTTP(s) interface and client library.
 
 For more on cache backups/restoration, see [Backing Up and Restoring From Disk] (#backup).
 
@@ -49,6 +49,10 @@ All commands return valid JSON responses, with two root elements: *errors* and *
     The *response* value is always an Array, even if the command returns only one response.
 
 If you are using the Node.js client library included with RESTCache, the callback will have the error and response values split for you, as seen in the [examples] (#examples) below.
+
+#### Configurable Commands
+
+All commands exposed through RESTCache can be enabled or disabled through simple true/false [Configuration] (#config) values. The majority of core commands are enabled by default, but some are disabled by default for security reasons. Each of the [Examples] (#examples) below indicates if a command is enabled or disabled by default.
 
 #### Quick Links:
 
@@ -102,6 +106,8 @@ The following examples are demonstrated using the Node.js client, which is just 
 
 #### PING
 
+**Default Enabled:** *true*
+
 The PING command verifies that you can connect to the RESTCache server.
 
 ```node
@@ -114,12 +120,14 @@ client.ping(function(err, res) {
 
 #### SET and GET
 
+**Default Enabled:** *true*
+
 Simple SET and GET functionality. SET a String KEY and GET it.
 
 ```node
 // equiv: /set?key=value
 client.set('key', 'value', function(err, res) {
-    
+
     // equiv: /get?key
     client.get('key', function(err, res) {
         console.log(res); // prints: ['value']
@@ -134,12 +142,12 @@ Using the same SET and GET commands, you can also SET and Array of values with c
 ```node
 // equiv: /set?key1=value1&key2=value2
 client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
-    
+
     // equiv: /get?key1
     client.get('key1', function(err, res) {
         console.log(res); // prints: ['value1']
     });
-    
+
     // equiv: get?key1&key2
     client.get(['key1', 'key2'], function(err, res) {
         console.log(res); // prints: ['value1', 'value2']
@@ -148,6 +156,8 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 ```
 
 #### DEL
+
+**Default Enabled:** *true*
 
 Delete a key/value by passing the key to the DEL command.
 
@@ -177,6 +187,8 @@ client.del(['key1', 'key2'], function(err, res) {
 
 #### KEYS
 
+**Default Enabled:** *false*
+
 Returns a list of all keys in the cache.
 
 ```node
@@ -190,6 +202,8 @@ client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
 ```
 
 #### INCR
+
+**Default Enabled:** *true*
 
 Increments a numeric value corresponding to the given key.
 INCR takes an optional incrementBy value which can be used to increment by a value other than the default (1).
@@ -245,6 +259,8 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 
 #### DECR
 
+**Default Enabled:** *true*
+
 Decrements a numeric value corresponding to the given key.
 DECR takes an optional decrementBy value which can be used to decrement by a value other than the default (1).
 
@@ -299,6 +315,8 @@ client.set(['numKey1', 'numKey2'], [2, 4], function(err, res) {
 
 #### <a name="expire"></a>EXPIRE
 
+**Default Enabled:** *true*
+
 Sets the expiry time on a key, in milliseconds, from the time the command is received. If an existing EXPIRE time is set on the specified key, or a default expiry time has been set, it will be overwritten with the new EXPIRE time.
 
 ```node
@@ -345,6 +363,8 @@ client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'
 
 #### RANDOM
 
+**Default Enabled:** *true*
+
 Returns a RANDOM key from the cache, or NULL if the cache is empty.
 
 ```node
@@ -359,6 +379,8 @@ client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
 
 #### STATS
 
+**Default Enabled:** *false*
+
 Returns RESTCache system stats such as memory usage, uptime, RESTCache and dependency version numbers, backup keys and timestamps, etc.
 
 ```node
@@ -371,9 +393,9 @@ client.stats(function(err, res) {
 
 #### BACKUP
 
-Performs a [disk backup] (#backup) and returns the key of the backup.
+**Default Enabled:** *false*
 
-Note: By default, calls to BACKUP are disabled, and will return an Error. See [Configuration] (#config) to enable.
+Performs a [disk backup] (#backup) and returns the key of the backup.
 
 ```node
 // equiv: /backup
@@ -384,9 +406,9 @@ client.backup(function(err, res) {
 
 #### RESTORE
 
-Performs a [cache restore] (#backup) and returns true if the backup was successful, or an Error if the cache could not be restored. RESTORE takes exactly one parameter, which is the key to the backup you wish to restore from. Backup keys can be retrieved via the STATS (all backup keys) and BACKUP (the new backup key) commands.
+**Default Enabled:** *false*
 
-Note: By default, calls to RESTORE are disabled, and will return an Error. See [Configuration] (#config) to enable.
+Performs a [cache restore] (#backup) and returns true if the backup was successful, or an Error if the cache could not be restored. RESTORE takes exactly one parameter, which is the key to the backup you wish to restore from. Backup keys can be retrieved via the STATS (all backup keys) and BACKUP (the new backup key) commands.
 
 ```node
 // equiv: /restore?backup-123.rc.bak
@@ -396,6 +418,8 @@ client.restore('backup-123.rc.bak', function(err, res) {
 ```
 
 #### DUMP
+
+**Default Enabled:** *false*
 
 Returns the entire cache as a JSON Object.
 
@@ -421,7 +445,7 @@ client.dump('backup-123.rc.bak', function(err, res) {
 
 # <a name="buildingExtensions"></a> Building Extensions
 
-Extensions allow you to implement or override functionality to RESTCache. Any JavaScript (.js) files placed in the server/extensions directory will be treated as additional routes, and can potentially override the built-in commands.
+Extensions allow you to implement or override functionality to RESTCache. Any JavaScript (.js) files placed in the server/extensions directory will be treated as additional routes, and can potentially override the built-in commands. It should be noted, extensions are subject to the ['command enabled/disabled configurations'] (#config), meaning if a command is disabled, calls to it through an extension will return an Error.
 
 #### Examples
 
@@ -560,9 +584,13 @@ Configurations related to the HTTP(s) interface, such as port.
 
 Configurations specific to the cache, such as default expire time.
 
+#### Commands
+
+Configurations to enable/disable any commands available in RESTCache.
+
 #### Backup
 
-Configurations related to RESTCache backup and restoration, such as time interval to perform backups, and whether or not the BACKUP and RESTORE commands are available.
+Configurations related to RESTCache backup and restoration, such as time interval to perform backups.
 
 #### Extensions
 
@@ -576,7 +604,7 @@ Miscellaneous configurations, such as debug mode.
 
 # <a name="contrib"></a>Contributing
 
-Contributions are welcome! 
+Contributions are welcome!
 
 Whether it's submitting an extension to become an official RESTCache action, or completing one of the [issues] (https://github.com/KyleBanks/RESTCache/issues) from the issue tracker, Pull Requests are very much appreciated.
 

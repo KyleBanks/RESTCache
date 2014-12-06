@@ -34,6 +34,11 @@ Cache.prototype = {
      */
     ping: function() {
         log.debug("PING");
+
+        if (! Config.commands.PING) {
+            return generateDisabledError("PING");
+        }
+
         return "PONG";
     },
 
@@ -45,13 +50,11 @@ Cache.prototype = {
     set: function(key, value) {
         log.debug("SET: [" + key+"="+value + "]");
 
-        this.cache[key] = value;
-
-        // If default expire time is enabled, and there is no existing expire time set on this key, set the expiry.
-        if (this.defaultExpireEnabled && (this.expirePointers[key] == null || this.expirePointers[key] === 'undefined')) {
-            this.expire(key, this.defaultExpiry);
+        if (! Config.commands.SET) {
+            return generateDisabledError("SET");
         }
-        return true;
+
+        return _set.call(this, key, value);
     },
 
     /**
@@ -61,7 +64,11 @@ Cache.prototype = {
     get: function(key) {
         log.debug("GET: [" + key + "]");
 
-        return this.cache[key];
+        if (! Config.commands.GET) {
+            return generateDisabledError("GET");
+        }
+
+        return _get.call(this, key);
     },
 
     /**
@@ -71,13 +78,11 @@ Cache.prototype = {
     del: function(key) {
         log.debug("DEL: [" + key + "]");
 
-        // Delete the key/value from the cache
-        delete this.cache[key];
+        if (! Config.commands.DEL) {
+            return generateDisabledError("DEL");
+        }
 
-        // Delete any expire times set for this key
-        delete this.expirePointers[key];
-
-        return true;
+        return _del.call(this, key);
     },
 
     /**
@@ -86,7 +91,11 @@ Cache.prototype = {
     keys: function() {
         log.debug("KEYS");
 
-        return Object.keys(this.cache);
+        if (! Config.commands.KEYS) {
+            return generateDisabledError("KEYS");
+        }
+
+        return _keys.call(this);
     },
 
     /**
@@ -99,6 +108,10 @@ Cache.prototype = {
     incr: function(key, incrementBy) {
         log.debug("INCR: ["+key+", "+incrementBy+"]");
 
+        if (! Config.commands.INCR) {
+            return generateDisabledError("INCR");
+        }
+
         // Ensure a valid incrementBy value has been passed
         incrementBy = getNumericValue(incrementBy, 1, "Invalid value [" + incrementBy + "] to increment by, must be a number.");
         if (incrementBy instanceof Error) {
@@ -106,15 +119,15 @@ Cache.prototype = {
         }
 
         // If the cache doesn't contain the KEY, default it to zero
-        var cachedValue = this.get(key);
-        cachedValue = getNumericValue(this.get(key), 0, "Invalid cached value [" + cachedValue + "] to increment by, must be a number.");
+        var cachedValue = _get.call(this, key);
+        cachedValue = getNumericValue(cachedValue, 0, "Invalid cached value [" + cachedValue + "] to increment by, must be a number.");
         if (cachedValue instanceof Error) {
             return cachedValue;
         }
 
         // Increment the value and set it in the cache
         cachedValue += incrementBy;
-        if (this.set(key, cachedValue)) {
+        if (_set.call(this, key, cachedValue)) {
             return cachedValue;
         } else {
             return new Error("Failed to SET incremented value [" + cachedValue + "] for key: " + key);
@@ -131,6 +144,10 @@ Cache.prototype = {
     decr: function(key, decrementBy) {
         log.debug("DECR: ["+key+", "+decrementBy+"]");
 
+        if (! Config.commands.DECR) {
+            return generateDisabledError("DECR");
+        }
+
         // Ensure a valid decrementBy value has been passed
         decrementBy = getNumericValue(decrementBy, 1, "Invalid value [" + decrementBy + "] to decrement by, must be a number.");
         if (decrementBy instanceof Error) {
@@ -138,15 +155,15 @@ Cache.prototype = {
         }
 
         // If the cache doesn't contain the KEY, default it to zero
-        var cachedValue = this.get(key);
-        cachedValue = getNumericValue(this.get(key), 0, "Invalid cached value [" + cachedValue + "] to decrement by, must be a number.");
+        var cachedValue = _get.call(this, key);
+        cachedValue = getNumericValue(cachedValue, 0, "Invalid cached value [" + cachedValue + "] to decrement by, must be a number.");
         if (cachedValue instanceof Error) {
             return cachedValue;
         }
 
         // Decrement the value and set it in the cache
         cachedValue -= decrementBy;
-        if (this.set(key, cachedValue)) {
+        if (_set.call(this, key, cachedValue)) {
             return cachedValue;
         } else {
             return new Error("Failed to SET decremented value [" + cachedValue + "] for key: " + key);
@@ -162,26 +179,11 @@ Cache.prototype = {
     expire: function(key, timeInMillis) {
         log.debug("EXPIRE: ["+key+", "+timeInMillis+"]");
 
-        // Ensure a valid timeInMillis has been passed
-        var errorString = "Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
-        timeInMillis = getNumericValue(timeInMillis, new Error(errorString), errorString);
-        if (timeInMillis instanceof Error) {
-            return timeInMillis;
+        if (! Config.commands.EXPIRE) {
+            return generateDisabledError("EXPIRE");
         }
 
-        // Check if there is an existing expire time, and if so, wipe it
-        var existingTimeoutPointer = this.expirePointers[key];
-        if (existingTimeoutPointer != null && typeof existingTimeoutPointer !== 'undefined') {
-            clearTimeout(existingTimeoutPointer);
-        }
-
-        // Set the new expire time
-        var $this = this;
-        this.expirePointers[key] = setTimeout(function() {
-            $this.del(key);
-        }, timeInMillis);
-
-        return true;
+        return _expire.call(this, key, timeInMillis);
     },
 
     /**
@@ -190,7 +192,11 @@ Cache.prototype = {
     random: function() {
         log.debug("RANDOM");
 
-        var cachedKeys = Object.keys(this.cache);
+        if (! Config.commands.RANDOM) {
+            return generateDisabledError("RANDOM");
+        }
+
+        var cachedKeys = _keys.call(this);
         if (cachedKeys.length > 0) {
             return cachedKeys[getRandomInt(0, cachedKeys.length - 1)];
         } else {
@@ -205,17 +211,16 @@ Cache.prototype = {
         var $this = this;
         log.debug("STATS");
 
-        var backups = [];
-        if ($this.moduleManager.getBackupManager() != null && typeof $this.moduleManager.getBackupManager() !== 'undefined') {
-            var backupObjs = $this.moduleManager.getBackupManager().getBackups();
-            backupObjs.forEach(function(backup) {
-                backups.push(backup.toJSON());
-            });
+        if(! Config.commands.STATS) {
+            return generateDisabledError("STATS");
         }
+
+        // Load the backup keys
+        var backups = $this.moduleManager.getBackupManager().getBackups();
 
         return {
             cache: {
-                keyCount: Object.keys(this.cache).length
+                keyCount: _keys.call($this).length
             },
             memory: {
                 heapTotal: process.memoryUsage().heapTotal,
@@ -244,17 +249,17 @@ Cache.prototype = {
         var $this = this;
         log.debug("BACKUP");
 
-        if (! Config.backup.apiBackupEnabled) {
-            cb(new Error("BACKUP is not enabled."));
-        } else {
-            $this.moduleManager.getBackupManager().performBackup(function(err, res) {
-                if (err) {
-                    return cb(err);
-                } else {
-                    return cb(null, [res]);
-                }
-            });
+        if (! Config.commands.BACKUP) {
+            return generateDisabledError("BACKUP");
         }
+
+        $this.moduleManager.getBackupManager().performBackup(function(err, res) {
+            if (err) {
+                return cb(err);
+            } else {
+                return cb(null, [res]);
+            }
+        });
     },
 
     /**
@@ -265,11 +270,11 @@ Cache.prototype = {
         var $this = this;
         log.debug("RESTORE");
 
-        if (! Config.backup.apiRestoreEnabled) {
-            return new Error("RESTORE is not enabled.");
-        } else {
-            return $this.moduleManager.getBackupManager().restoreBackup(backupKey);
+        if (! Config.commands.RESTORE) {
+            return generateDisabledError("RESTORE");
         }
+
+        return $this.moduleManager.getBackupManager().restoreBackup(backupKey);
     },
 
     /**
@@ -280,8 +285,8 @@ Cache.prototype = {
         var $this = this;
         log.debug("DUMP: ["+backupKey+"]");
 
-        if (! Config.cache.dumpEnabled) {
-            return new Error("DUMP is not enabled.");
+        if (! Config.commands.DUMP) {
+            return generateDisabledError("DUMP");
         } else {
 
             // If a backupKey was provided, retrieve that backup's contents
@@ -299,6 +304,63 @@ Cache.prototype = {
  * @type {Cache}
  */
 module.exports = Cache;
+
+/**
+ * Core Internal Methods
+ *
+ * These must be kept private to allow internal access while maintaining enabled/disabled
+ * configurations to external callers.
+ */
+function _set(key, value) {
+    this.cache[key] = value;
+
+    // If default expire time is enabled, and there is no existing expire time set on this key, set the expiry.
+    if (this.defaultExpireEnabled && (this.expirePointers[key] == null || this.expirePointers[key] === 'undefined')) {
+        _expire.call(this, key, this.defaultExpiry);
+    }
+    return true;
+}
+
+function _get(key) {
+    return this.cache[key];
+}
+
+function _del(key) {
+    // Delete the key/value from the cache
+    delete this.cache[key];
+
+    // Delete any expire times set for this key
+    delete this.expirePointers[key];
+
+    return true;
+}
+
+function _expire(key, timeInMillis) {
+    // Ensure a valid timeInMillis has been passed
+    var errorString = "Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
+    timeInMillis = getNumericValue(timeInMillis, new Error(errorString), errorString);
+    if (timeInMillis instanceof Error) {
+        return timeInMillis;
+    }
+
+    // Check if there is an existing expire time, and if so, wipe it
+    var existingTimeoutPointer = this.expirePointers[key];
+    if (existingTimeoutPointer != null && typeof existingTimeoutPointer !== 'undefined') {
+        clearTimeout(existingTimeoutPointer);
+    }
+
+    // Set the new expire time
+    var $this = this;
+    this.expirePointers[key] = setTimeout(function() {
+        _del.call($this, key);
+    }, timeInMillis);
+
+    return true;
+}
+
+function _keys() {
+    return Object.keys(this.cache);
+}
 
 
 /**
@@ -319,4 +381,8 @@ function getNumericValue(value, defaultValue, errorMessage) {
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateDisabledError(commandName) {
+    return new Error(commandName + " not enabled.");
 }

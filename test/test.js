@@ -115,18 +115,18 @@ function runTestInRequestMode(mode, testCallback) {
             });
          },
 
-        /**
-         * Tests KEYS
-         */
-         function (cb) {
-            client.keys(function(error, response) {
-                assert.equal(error.length, 0, "KEYS returned an error: " + error);
-                assert.notEqual(response.indexOf(singleKey), -1, "KEYS didn't contain " + singleKey + " !");
-
-                console.log("KEYS: OK");
-                cb(null, true);
-            });
-         },
+//        /**
+//         * Tests KEYS
+//         */
+//         function (cb) {
+//            client.keys(function(error, response) {
+//                assert.equal(error.length, 0, "KEYS returned an error: " + error);
+//                assert.notEqual(response.indexOf(singleKey), -1, "KEYS didn't contain " + singleKey + " !");
+//
+//                console.log("KEYS: OK");
+//                cb(null, true);
+//            });
+//         },
 
         /**
          * Tests invalid GET (key doesn't exist)
@@ -192,18 +192,18 @@ function runTestInRequestMode(mode, testCallback) {
             });
          },
 
-        /**
-         * Tests KEYS on a deleted KEY
-         */
-         function(cb) {
-            client.keys(function(error, response) {
-                assert.equal(error.length, 0, "KEYS (Deleted KEY) returned an error: " + error);
-                assert.equal(response.indexOf(singleKey), -1, "KEYS (Deleted KEY) contained the deleted key: " + singleKey + " !");
-
-                console.log("KEYS (Deleted KEY): OK");
-                cb(null, true);
-            });
-         },
+//        /**
+//         * Tests KEYS on a deleted KEY
+//         */
+//         function(cb) {
+//            client.keys(function(error, response) {
+//                assert.equal(error.length, 0, "KEYS (Deleted KEY) returned an error: " + error);
+//                assert.equal(response.indexOf(singleKey), -1, "KEYS (Deleted KEY) contained the deleted key: " + singleKey + " !");
+//
+//                console.log("KEYS (Deleted KEY): OK");
+//                cb(null, true);
+//            });
+//         },
 
         /**
          * Tests GET on a deleted key
@@ -565,32 +565,32 @@ function runTestInRequestMode(mode, testCallback) {
          */
          function(cb) {
             // First, get a list of keys in the cache
-            client.keys(function(error, keys) {
+         //   client.keys(function(error, keys) {
 
                 // Get a random key and ensure it exists in the keys array
                 client.random(function(error, response) {
                     assert.equal(error.length, 0, "RANDOM returned an error: " + error);
                     assert.equal(response.length, 1, "RANDOM returned the wrong number of values: " + response.length);
-                    assert.notEqual(keys.indexOf(response[0]), -1, "RANDOM returned a key that doesn't exist: [" + keys + "]  " + response[0]);
+                  //  assert.notEqual(keys.indexOf(response[0]), -1, "RANDOM returned a key that doesn't exist: [" + keys + "]  " + response[0]);
 
-                    console.log("KEYS: OK");
+                    console.log("RANDOM: OK");
                     cb(null, true);
                 });
-            });
+          //  });
          },
 
-        /**
-         * Tests STATS
-         * @param cb
-         */
-         function(cb) {
-            client.stats(function(error, response) {
-                assert.equal(error.length, 0, "STATS returned an error: " + error);
-
-                console.log("STATS: OK");
-                cb(null, true);
-            });
-        }
+//        /**
+//         * Tests STATS
+//         * @param cb
+//         */
+//         function(cb) {
+//            client.stats(function(error, response) {
+//                assert.equal(error.length, 0, "STATS returned an error: " + error);
+//
+//                console.log("STATS: OK");
+//                cb(null, true);
+//            });
+//        }
 
     ], function (error, results) {
         // Check the results of each test to ensure all are successful

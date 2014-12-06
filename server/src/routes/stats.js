@@ -3,7 +3,15 @@
  */
 
 var HttpRoute = require('../entity/HttpRoute');
+var RCError = require('../entity/RCError');
 
 module.exports = new HttpRoute('/stats', function(cache, req, res) {
-    res.json(this.generateOutput(null, cache.stats()));
+
+    var output = cache.stats();
+
+    if (output instanceof Error) {
+        res.json(this.generateOutput(new RCError(output.message, 0), null));
+    } else {
+        res.json(this.generateOutput(null, output));
+    }
 });

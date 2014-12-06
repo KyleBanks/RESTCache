@@ -27,17 +27,8 @@ Backup.prototype = {
         if (this.lastModified > otherBackup.lastModified)
             return -1;
         return 0;
-    },
-
-    /**
-     * Returns a JSON representation of this Backup
-     */
-    toJSON: function() {
-        return {
-            key: this.key,
-            lastModified: this.lastModified
-        }
     }
+
 };
 
 /**

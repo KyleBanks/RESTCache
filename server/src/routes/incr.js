@@ -33,6 +33,5 @@ module.exports = new HttpRoute("/incr", function(cache, req, res) {
     }
 
     // Output the responses
-    console.log(errors);
     res.json(this.generateOutput(errors, incrementedValues));
 });
