@@ -42,7 +42,7 @@ function RCClient(host, options) {
         if (options.mode === MODE_GET || options.mode === MODE_POST) {
             this.mode = options.mode;
         } else {
-            throw new Error("Unknown RCClient Client Mode: " + options.mode);
+            throw new Error("Unknown RCClient Mode: " + options.mode);
         }
     }
 
@@ -207,7 +207,7 @@ RCClient.prototype = {
     },
 
     /**
-     * Returns the RCClient Stats
+     * Returns the RESTCache Stats
      * @param cb
      */
     stats: function(cb) {
@@ -244,7 +244,7 @@ RCClient.prototype = {
 
 
     /**
-     * Sends an HTTP request (GET or POST) to the RCClient server, with an Array of key=value pairs.
+     * Sends an HTTP request (GET or POST) to the RESTCache server, with an Array of key=value pairs.
      *
      * The key/value arrays can both be null, or values can be null, or neither can be null.
      * If neither are null, they must be the same length.
