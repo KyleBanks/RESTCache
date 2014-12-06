@@ -245,7 +245,7 @@ Cache.prototype = {
         log.debug("BACKUP");
 
         if (! Config.backup.apiBackupEnabled) {
-            cb(new Error("API Backup is not enabled."));
+            cb(new Error("BACKUP is not enabled."));
         } else {
             $this.moduleManager.getBackupManager().performBackup(function(err, res) {
                 if (err) {
@@ -266,9 +266,30 @@ Cache.prototype = {
         log.debug("RESTORE");
 
         if (! Config.backup.apiRestoreEnabled) {
-            return new Error("API Restore is not enabled.");
+            return new Error("RESTORE is not enabled.");
         } else {
             return $this.moduleManager.getBackupManager().restoreBackup(backupKey);
+        }
+    },
+
+    /**
+     * Returns the entire cache, or the contents of the specified backupKey if provided
+     * @param backupKey - Optional key to a specific backup to dump
+     */
+    dump: function(backupKey) {
+        var $this = this;
+        log.debug("DUMP: ["+backupKey+"]");
+
+        if (! Config.cache.dumpEnabled) {
+            return new Error("DUMP is not enabled.");
+        } else {
+
+            // If a backupKey was provided, retrieve that backup's contents
+            if (backupKey != null && typeof backupKey !== 'undefined') {
+                return $this.moduleManager.getBackupManager().loadBackup(backupKey);
+            } else {
+                return this.cache;
+            }
         }
     }
 };

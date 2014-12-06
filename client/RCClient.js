@@ -240,6 +240,21 @@ RCClient.prototype = {
         $this.sendRequest("/random", [backupKey], null, cb);
     },
 
+    /**
+     * Performs a DUMP of the cache, with the optional backupKey if you wish to receive a dump of a specific backup
+     * @param backupKey [Optional: Pass null to retrieve a dump of the current cache]
+     * @param cb
+     */
+    dump: function(backupKey, cb) {
+        var $this = this;
+        $this.log("DUMP ["+backupKey+"]");
+
+        if (backupKey == null || typeof backupKey === 'undefined') {
+            $this.sendRequest("/dump", null, null, cb);
+        } else {
+            $this.sendRequest("/dump", [backupKey], null, cb);
+        }
+    },
 
 
 

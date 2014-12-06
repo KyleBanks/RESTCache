@@ -168,7 +168,7 @@ BackupManager.prototype = {
     },
 
     /**
-     * Returns a JSON representation of the specified backup
+     * Returns the JSON contents of the specified backup
      * @param backupName - The name of the backup to load
      */
     loadBackup: function(backupName) {
@@ -183,7 +183,9 @@ BackupManager.prototype = {
             // Parse the file as JSON, and return
             return JSON.parse(data);
         } catch (error) {
-            return new Error("Unable to restore from backup: " + backupName);
+            log.error("Unable to load backup: " + error.message);
+            log.error(error);
+            return new Error("Unable to load backup " + backupName);
         }
 
     },

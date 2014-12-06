@@ -26,7 +26,12 @@ module.exports = {
          Calling a write-action such as SET or INCR on an existing key will not overwrite the existing expiry time. In order to overwrite
          the existing expiry time, you need to wait for the existing key to expire, or call DEL on the existing key.
          */
-        defaultExpiry: 0
+        defaultExpiry: 0,
+
+        /*
+         If set to true, allows the DUMP command to be executed.
+         */
+        dumpEnabled: true
     },
 
     /**

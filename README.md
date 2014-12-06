@@ -46,7 +46,7 @@ All commands return valid JSON responses, with two root elements: *errors* and *
 - *errors* contains an Array of *RCError* objects, or an empty Array in the case of no errors.
     *RCError* objects contain a message (string) and an index (integer) that the error occurred at. For example, if you call an action with 5 keys and the cache failed to perform the action on the third key, the index would be 2.
 - *response* contains an Array of values specific to the particular command being executed.
-    The *response* value is always an Array, even if the command returns only one response, with the exception of [STATS] (#stats) which returns a JSON object.
+    The *response* value is always an Array, even if the command returns only one response.
 
 If you are using the Node.js client library included with RESTCache, the callback will have the error and response values split for you, as seen in the [examples] (#examples) below.
 
@@ -69,6 +69,7 @@ This repository contains the server component of RESTCache, a Node.js client, an
 
 ```node
 cd server
+npm install # Required first time only
 node server.js
 ```
 
@@ -89,6 +90,7 @@ var client = new RCClient("http://localhost:7654", opts);
 
 ```node
 cd test
+npm install # Required first time only
 node test.js -h=http://localhost:7654
 ```
 
@@ -357,12 +359,12 @@ client.set(['key1', 'key2', 'key3'], [1, 2, 3], function(err, res) {
 
 #### STATS
 
-Returns RESTCache system stats such as memory usage, uptime, version numbers, etc.
+Returns RESTCache system stats such as memory usage, uptime, RESTCache and dependency version numbers, backup keys and timestamps, etc.
 
 ```node
 // equiv: /stats
 client.stats(function(err, res) {
-    console.log(res); // prints: JSON Object containing system stats
+    console.log(res); // prints: An Array containing a single JSON Object of system stats
 });
 ```
 
@@ -393,6 +395,28 @@ client.restore('backup-123.rc.bak', function(err, res) {
 });
 ```
 
+#### DUMP
+
+Returns the entire cache as a JSON Object.
+
+```node
+client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
+
+    // equiv: /dump
+    client.dump(null, function(err, res) {
+        console.log(res); // prints: [ {'key1': 'value1', 'key2': 'value2'} ]
+    });
+});
+```
+
+DUMP takes a single optional key which is the key to a specific backup if you wish to have RESTCache output the entire contents of a backup, rather than the current cache.
+
+```node
+// equiv: /dump?backup-123.rc.bak
+client.dump('backup-123.rc.bak', function(err, res) {
+    console.log(res); // prints: An Array containing a single JSON Object of the contents of the specified dump file
+});
+```
 
 
 # <a name="buildingExtensions"></a> Building Extensions

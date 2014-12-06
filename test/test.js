@@ -1,7 +1,7 @@
 /**
  * Execute ALL test scripts
  *
- * TODO: Currently the BACKUP and RESTORE commands cannot be tested.
+ * TODO: Currently commands that are disabled by default cannot be tested. Need a mechanism of detecting which commands are enabled/disabled.
  *
  * Options:
  *      -h=protocol:host:port - URL of the RESTCache server to connect to. (Optional: Defaults to "http://localhost:7654")

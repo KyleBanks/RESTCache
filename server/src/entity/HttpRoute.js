@@ -51,7 +51,7 @@ HttpRoute.prototype = {
 
         // Normalize response
         if (response != null && typeof response !== 'undefined') {
-            if (! (response instanceof Array) && ! (response instanceof Object)) {
+            if (! (response instanceof Array)) {
                 response = [response];
             }
         } else {
