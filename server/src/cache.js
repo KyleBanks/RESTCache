@@ -200,7 +200,7 @@ Cache.prototype = {
     },
 
     /**
-     * Outputs RCClient stats such as versions, memory usage, etc.
+     * Outputs RESTCache stats such as versions, memory usage, etc.
      */
     stats: function() {
         var $this = this;
