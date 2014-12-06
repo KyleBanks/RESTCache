@@ -287,9 +287,9 @@ RCClient.prototype = {
                     var keyPairs = [];
                     for (var i = 0; i < keys.length; i++) {
                         if (valuesExist) {
-                            keyPairs.push(keys[i]+'='+values[i]);
+                            keyPairs.push(encodeString(keys[i])+'='+encodeString(values[i]));
                         } else {
-                            keyPairs.push(keys[i]);
+                            keyPairs.push(encodeString(keys[i]));
                         }
                     }
                     url = url + "?" + keyPairs.join("&");
@@ -348,12 +348,9 @@ RCClient.prototype = {
 /**
  * Private Helpers
  */
-
-// URL Encodes a String
 function encodeString(str) {
     return encodeURIComponent(str);
 }
-
 // Returns an encoded array of strings given either an array or an object
 function normalizeArray(arr) {
     if (arr == null || typeof arr === 'undefined') {
@@ -364,10 +361,10 @@ function normalizeArray(arr) {
 
     if (arr instanceof Array) {
         for (var i = 0; i < arr.length; i++) {
-            normalized.push(encodeString(arr[i]));
+            normalized.push(arr[i]);
         }
     } else {
-        normalized.push(encodeString(arr));
+        normalized.push(arr);
     }
 
     return normalized;
