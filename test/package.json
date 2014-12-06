@@ -1,5 +1,5 @@
 {
-    "name": "RESTCache-Test-Scripts",
+    "name": "RESTCache-Test",
     "version": "0.0.1",
     "bin": {
         "test-restcache" : "./test.js"

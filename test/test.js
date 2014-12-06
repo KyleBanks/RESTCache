@@ -11,7 +11,7 @@
 /**
  * Imports
  */
-var RESTCache = require("../client/Client");
+var RCClient = require("../client/RCClient");
 var async = require('async');
 var assert = require('assert');
 
@@ -31,8 +31,8 @@ process.argv.forEach(function (arg) {
  * @param testCallback
  */
 function runTestInRequestMode(mode, testCallback) {
-    // Initialize the RESTCache client
-    var client = new RESTCache(serverUrl, { debug: false, mode: mode });
+    // Initialize the RCClient client
+    var client = new RCClient(serverUrl, { debug: false, mode: mode });
 
     // Define some test keys/values
     var singleKey = mode+"testSetGet",

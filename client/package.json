@@ -1,8 +1,8 @@
 {
-    "name": "RESTCache-Client",
+    "name": "RCClient",
     "version": "0.0.1",
     "bin": {
-        "restcache-client" : "./client.js"
+        "rcclient" : "./RCClient.js"
     },
     "dependencies": {
         "request": "*"

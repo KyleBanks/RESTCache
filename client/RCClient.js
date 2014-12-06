@@ -1,4 +1,10 @@
 /**
+ * RCClient.js
+ *
+ * RESTCache Node.js client interface
+ */
+
+/**
  * Imports
  */
 var request = require("request");
@@ -11,14 +17,14 @@ var MODE_POST = "POST",
     MODE_GET = "GET";
 
 /**
- * Constructs a new RESTCache client
+ * Constructs a new RCClient client
  * @param host In the format of protocol://hostname:port (ex. http://localhost:7654)
  * @param options
  *      - debug: Set true to output debug logs to the console
  *      - mode: "GET" or "POST", defaults to "POST"
  * @constructor
  */
-function RESTCache(host, options) {
+function RCClient(host, options) {
     // Ensure the host doesn't end in '/'
     if (host.substr(-1) === "/") {
         host = host.substring(0, host.length - 2);
@@ -36,14 +42,14 @@ function RESTCache(host, options) {
         if (options.mode === MODE_GET || options.mode === MODE_POST) {
             this.mode = options.mode;
         } else {
-            throw new Error("Unknown RESTCache Client Mode: " + options.mode);
+            throw new Error("Unknown RCClient Client Mode: " + options.mode);
         }
     }
 
-    this.log("RESTCache initialized with host " + this.serverUrl);
+    this.log("RCClient initialized with host " + this.serverUrl);
 }
 
-RESTCache.prototype = {
+RCClient.prototype = {
 
     /**
      * Attempts to verify connection to the cache by sending a PING request
@@ -201,7 +207,7 @@ RESTCache.prototype = {
     },
 
     /**
-     * Returns the RESTCache Stats
+     * Returns the RCClient Stats
      * @param cb
      */
     stats: function(cb) {
@@ -238,7 +244,7 @@ RESTCache.prototype = {
 
 
     /**
-     * Sends an HTTP request (GET or POST) to the RESTCache server, with an Array of key=value pairs.
+     * Sends an HTTP request (GET or POST) to the RCClient server, with an Array of key=value pairs.
      *
      * The key/value arrays can both be null, or values can be null, or neither can be null.
      * If neither are null, they must be the same length.
@@ -355,4 +361,4 @@ function normalizeArray(arr) {
 /**
  * Public
  */
-module.exports = RESTCache;
+module.exports = RCClient;

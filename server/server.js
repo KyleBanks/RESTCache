@@ -6,7 +6,7 @@
  * Created by kylewbanks on 2014-12-01.
  */
 
-console.log("Initializing RESTCache...");
+console.log("Initializing RCClient...");
 
 /**
  * Imports
@@ -47,4 +47,4 @@ backupManager.initialize();
 httpInterface.initialize();
 
 
-console.log("RESTCache Started.");
+console.log("RCClient Started.");

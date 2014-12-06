@@ -9,7 +9,7 @@ module.exports = {
     http: {
 
         /*
-         The port to run the RESTCache HTTP(s) interface on
+         The port to run the RCClient HTTP(s) interface on
          */
         port: 7654
     },

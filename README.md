@@ -75,14 +75,14 @@ node server.js
 ## Node.js Client
 
 ```node
-var RESTCache = require("restcache-client");
+var RCClient = require("rcclient");
 
 // Optional client configuration
 var opts = {
     debug: false,
     mode: "POST"
 };
-var client = new RESTCache("http://localhost:7654", opts);
+var client = new RCClient("http://localhost:7654", opts);
 ```
 
 ## Tests
