@@ -35,9 +35,9 @@ By default, keys (and their values) live forever. In order to release keys, ther
 - Call [EXPIRE] (#expire): Set a time to expire the passed key(s)
 - Call [DEL] (#del): Instantly delete the key and it's value
 
-#### 'Multi' Commands
+#### Batch Commands
 
-The majority of commands, unless otherwise indicated, have a 'Multi' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
+The majority of commands, unless otherwise indicated, have a 'Batch' mode which allows either a single key and/or value to be passed, or an Array of keys and/or values in order to batch requests.
 
 #### JSON Responses
 
