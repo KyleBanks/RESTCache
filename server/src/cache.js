@@ -192,8 +192,7 @@ Cache.prototype = {
 
         var cachedKeys = Object.keys(this.cache);
         if (cachedKeys.length > 0) {
-            var indexOfRandomKey = getRandomInt(0, cachedKeys.length);
-            return cachedKeys[indexOfRandomKey];
+            return cachedKeys[getRandomInt(0, cachedKeys.length - 1)];
         } else {
             return null;
         }

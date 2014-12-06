@@ -276,7 +276,7 @@ function runTestInRequestMode(mode, testCallback) {
          * @param cb
          */
          function(cb) {
-            client.incr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
+            client.incr(incrUnknownKey + new Date().getTime(), null, function(error, response) {
                 assert.equal(error.length, 0, "INCR Unknown Key returned an error: " + error);
                 assert.equal(response.length, 1, "INCR Unknown Key returned the wrong number of values: " + response.length);
                 assert.equal(isNaN(response[0]), false, "INCR Unknown Key did not return a numeric response");
@@ -382,7 +382,7 @@ function runTestInRequestMode(mode, testCallback) {
          * @param cb
          */
          function(cb) {
-            client.decr(incrUnknownKey + new Date().getMilliseconds(), null, function(error, response) {
+            client.decr(incrUnknownKey + new Date().getTime(), null, function(error, response) {
                 assert.equal(error.length, 0, "DECR Unknown Key returned an error: " + error);
                 assert.equal(response.length, 1, "DECR Unknown Key returned the wrong number of values: " + response.length);
                 assert.equal(isNaN(response[0]), false, "DECR Unknown Key did not return a numeric response");
