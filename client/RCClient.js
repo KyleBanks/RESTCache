@@ -297,7 +297,7 @@ RCClient.prototype = {
 
                 request.get(url, function (error, response, body) {
                     if (error) {
-                        cb(error);
+                        cb([error]);
                     } else {
                         var res = JSON.parse(body);
                         cb(res.errors, res.response);
@@ -321,15 +321,13 @@ RCClient.prototype = {
 
                 request.post(url, {form: postData}, function(error, response, body) {
                     if (error) {
-                        cb(error);
+                        cb([error]);
                     } else {
                         var res = JSON.parse(body);
                         cb(res.errors, res.response);
                     }
                 });
                 break;
-            default:
-                return cb(new Error("Unknown mode: " + $this.mode));
         }
     },
 

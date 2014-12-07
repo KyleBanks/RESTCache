@@ -124,6 +124,6 @@ module.exports = {
          When set to true, the cache will output messages for all actions to console.log, as
          well as other initialization messages on startup.
          */
-        debug: true
+        debug: false
     }
 };

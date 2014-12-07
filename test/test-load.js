@@ -30,8 +30,7 @@ if (callCount == null || isNaN(callCount)) {
 }
 callCount = parseInt(callCount);
 
-var client = new RCClient(serverUrl, { debug: false, mode: "GET" });
-var startTime = new Date();
+var client = new RCClient(serverUrl, { debug: false, mode: "POST" });
 
 // Initialize the base key/value format to be used for the test
 var key = 'Load Test Key ',
@@ -47,12 +46,16 @@ function callSet(callsRemaining) {
             throw err[0];
         } else {
            if (res == null || typeof res === 'undefined') {
+               console.error("RESTCache failed to return a response!");
                throw new Error("RESTCache failed with " + callsRemaining + " requests remaining in the test.");
            }
         }
 
         callsRemaining --;
         if (callsRemaining > 0) {
+            if (callsRemaining % 1000 == 0) {
+                console.log((callCount - callsRemaining) + " requests completed...");
+            }
             callSet(callsRemaining);
         } else {
             var completionTime = ((new Date().getTime() - startTime.getTime()) / 1000);
@@ -63,4 +66,5 @@ function callSet(callsRemaining) {
     });
 }
 
+var startTime = new Date();
 callSet(callCount);

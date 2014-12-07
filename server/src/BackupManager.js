@@ -127,7 +127,7 @@ BackupManager.prototype = {
                 continue;
             }
 
-            console.log("Removing: " + existingBackups[i].key);
+            log.debug("Removing: " + existingBackups[i].key);
             fs.unlinkSync($this.directory + "/" + existingBackups[i].key);
         }
 
