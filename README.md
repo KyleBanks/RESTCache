@@ -525,7 +525,7 @@ module.exports = new HttpRoute('/get', function(cache, req, res) {
 });
 ```
 
-The most powerful use-case for custom Extensions is to batch together common sequences for your application's workflow into a single call. Since RESTCache is single-threaded, this provides a fully-atomic environment for accessing and manipulating your data, and you can be assured that no data has been modified between your calls to the cache.
+The most powerful use-case for custom Extensions is to batch together common sequences for your application's workflow into a single call. Since RESTCache is single-threaded, and all commands are executed synchronously, this provides a fully-atomic environment for accessing and manipulating your data, and you can be assured that no data has been modified between your calls to the cache.
 
 In the following example, we can pass multiple key=value pairs to overwrite with a new value, only if the cached value is equal to the value we pass for each key.
 

@@ -245,9 +245,9 @@ Cache.prototype = {
     },
 
     /**
-     * Triggers a backup and returns the name of it, if API backup is enabled
+     * Triggers a synchronous backup to disk and returns the name of it, if API backup is enabled
      */
-    backup: function(cb) {
+    backup: function() {
         var $this = this;
         log.debug("BACKUP");
 
@@ -255,17 +255,11 @@ Cache.prototype = {
             return generateDisabledError("BACKUP");
         }
 
-        $this.moduleManager.getBackupManager().performBackup(function(err, res) {
-            if (err) {
-                return cb(err);
-            } else {
-                return cb(null, [res]);
-            }
-        });
+        return $this.moduleManager.getBackupManager().performBackup();
     },
 
     /**
-     * Triggers a restore of the Cache to the specified backup, available via STATS
+     * Triggers a synchronous restore of the Cache from the specified backup key. Backup Keys can be retrieved through the STATS command.
      * @param backupKey
      */
     restore: function(backupKey) {

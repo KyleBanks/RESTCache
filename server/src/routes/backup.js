@@ -6,13 +6,11 @@ var HttpRoute = require('../entity/HttpRoute');
 var RCError = require('../entity/RCError');
 
 module.exports = new HttpRoute('/backup', function(cache, req, res) {
-    var $this = this;
+    var output = cache.backup();
 
-    cache.backup(function(err, backupRes) {
-        if(err) {
-            err = new RCError(err.message, 0);
-        }
-
-        res.json($this.generateOutput(err, backupRes));
-    });
+    if (output instanceof Error) {
+        res.json(this.generateOutput(new RCError(output.message, 0), null));
+    } else {
+        res.json(this.generateOutput(null, output));
+    }
 });

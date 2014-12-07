@@ -69,10 +69,10 @@ BackupManager.prototype = {
     },
 
     /**
-     * Performs a full disk-based backup of the cache
+     * Performs a full disk-based backup of the cache, synchronously.
      * @param cb - Callback to execute when the backup is complete. Accepts an error object and the name of the new backup (String)
      */
-    performBackup: function(cb) {
+    performBackup: function() {
         log.debug("Performing cache backup...");
         var $this = this;
 
@@ -88,22 +88,18 @@ BackupManager.prototype = {
         var cacheMemory = JSON.stringify($this.moduleManager.getCache().cache);
 
         // Write the cache to disk
-        fs.writeFile(this.directory + "/" + backupName, cacheMemory, function(err) {
-            if(err) {
-                log.error("An error occurred during cache backup: " + backupName);
-                log.error(err);
-            } else {
-                log.debug("New backup created: " + backupName);
-            }
+        var err = fs.writeFileSync(this.directory + "/" + backupName, cacheMemory);
+        if(err) {
+            log.error("An error occurred during cache backup: " + backupName);
+            log.error(err);
+        } else {
+            log.debug("New backup created: " + backupName);
+        }
 
-            // Execute the callback, if set
-            if (cb != null && typeof cb !== 'undefined') {
-                cb(err, backupName);
-            }
+        // Run the cleanup
+        $this.cleanExcessBackups(null);
 
-            // Run the cleanup
-            $this.cleanExcessBackups(null);
-        });
+        return backupName;
     },
 
     /**
