@@ -8,7 +8,7 @@
  * Imports
  */
 var log = require("./misc/log");
-var Config = require('../conf/Config');
+var Config = require('../conf/config');
 var Package = require('../package.json');
 
 /**
@@ -295,8 +295,23 @@ Cache.prototype = {
             if (backupKey != null && typeof backupKey !== 'undefined') {
                 return $this.moduleManager.getBackupManager().loadBackup(backupKey);
             } else {
-                return this.cache;
+                return $this.cache;
             }
+        }
+    },
+
+    /**
+     * Empties the entire cache.
+     */
+    flush: function() {
+        var $this = this;
+        log.debug("FLUSH");
+
+        if (! Config.commands.FLUSH) {
+            return generateDisabledError("FLUSH");
+        } else {
+            $this.cache = {};
+            return true;
         }
     }
 };

@@ -256,7 +256,16 @@ RCClient.prototype = {
         }
     },
 
+    /**
+     * Empties the entire cache
+     * @param cb
+     */
+    flush: function(cb) {
+        var $this = this;
+        $this.log("FLUSH");
 
+        $this.sendRequest("/flush", null, null, cb);
+    },
 
     /**
      * Sends an HTTP request (GET or POST) to the RESTCache server, with an Array of key=value pairs.
@@ -344,12 +353,19 @@ RCClient.prototype = {
 
 
 /**
+ * Public
+ * @type {RCClient}
+ */
+module.exports = RCClient;
+
+/**
  * Private Helpers
  */
 function encodeString(str) {
     return encodeURIComponent(str);
 }
-// Returns an encoded array of strings given either an array or an object
+
+// Returns an Array given either an Array or a single value
 function normalizeArray(arr) {
     if (arr == null || typeof arr === 'undefined') {
         return null;
@@ -358,17 +374,10 @@ function normalizeArray(arr) {
     var normalized = [];
 
     if (arr instanceof Array) {
-        for (var i = 0; i < arr.length; i++) {
-            normalized.push(arr[i]);
-        }
+        normalized = arr;
     } else {
         normalized.push(arr);
     }
 
     return normalized;
 }
-
-/**
- * Public
- */
-module.exports = RCClient;

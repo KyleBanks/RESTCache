@@ -432,6 +432,26 @@ client.dump('backup-123.rc.bak', function(err, res) {
 });
 ```
 
+#### FLUSH
+
+**Default Enabled:** *false*
+
+Empties the entire cache.
+
+```node
+client.set(['key1', 'key2'], ['value1', 'value2'], function(err, res) {
+
+    // equiv: /flush
+    client.flush(function(err, res) {
+        console.log(res); // prints: [ true ]
+        
+        client.get(['key1', 'key2'], function(err, res) {
+            console.log(res); // prints: [ null, null ]
+        });
+    });
+});
+```
+
 
 # <a name="buildingExtensions"></a> Building Extensions
 

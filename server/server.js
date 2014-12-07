@@ -13,7 +13,7 @@ console.log("Initializing RESTCache...");
  */
 var Cache = require('./src/Cache');
 var BackupManager = require('./src/BackupManager');
-var Config = require('./conf/Config');
+var Config = require('./conf/config');
 var ModuleManager = require('./src/ModuleManager');
 var HttpInterface = require('./src/HttpInterface');
 
