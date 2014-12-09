@@ -351,6 +351,52 @@ client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'
 });
 ```
 
+#### UNEXPIRE
+
+**Default Enabled:** *true*
+
+Removes the expire time on a key, making the key live forever until a new EXPIRE time is set. Even if you have a default expire time set in the [RESTCache configuration] (#config), the expire time will be removed and set the key to live indefinitely.
+
+```node
+client.set('keyToExpire', 'valueToExpire', function(err, res) {
+
+    client.expire('keyToExpire', 1000, function(err, res) {
+        
+        // equiv: /unexpire?keyToExpire
+        client.unexpire('keyToExpire', function(err, res) {
+            console.log(res); // prints: [true]
+        });
+
+        setTimeout(function() {
+            client.get('keyToExpire', function(err, res) {
+                console.log(res); // prints: ['valueToExpire']
+            });
+        }, 1001);
+    });
+});
+```
+
+You can also UNEXPIRE multiple keys in the same request.
+
+```node
+client.set(['keyToExpire1', 'keyToExpire2'], ['valueToExpire1', 'valueToExpire2'], function(err, res) {
+
+    client.expire(['keyToExpire1', 'keyToExpire2'], 1000, function(err, res) {
+        
+        // equiv: /unexpire?keyToExpire1&keyToExpire2
+        client.unexpire(['keyToExpire1', 'keyToExpire2'], function(err, res) {
+            console.log(res); // prints: [true, true]
+        });
+
+        setTimeout(function() {
+            client.get(['keyToExpire1', 'keyToExpire2'], function(err, res) {
+                console.log(res); // prints: ['valueToExpire1', 'valueToExpire2']
+            });
+        }, 1001);
+    });
+});
+```
+
 #### RANDOM
 
 **Default Enabled:** *true*

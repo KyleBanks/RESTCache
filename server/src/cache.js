@@ -188,6 +188,20 @@ Cache.prototype = {
     },
 
     /**
+     * Removes the expiry time on a key, and sets it to live forever
+     * @param key
+     */
+    unexpire: function(key) {
+        log.debug("UNEXPIRE: ["+key+"]");
+
+        if (! Config.commands.UNEXPIRE) {
+            return generateDisabledError("UNEXPIRE");
+        }
+
+        return _unexpire.call(this, key);
+    },
+
+    /**
      * Returns a random key from the cache
      */
     random: function() {
@@ -347,6 +361,8 @@ function _del(key) {
 }
 
 function _expire(key, timeInMillis) {
+    var $this = this;
+
     // Ensure a valid timeInMillis has been passed
     var errorString = "Invalid timeInMillis passed to EXPIRE: " + timeInMillis;
     timeInMillis = getNumericValue(timeInMillis, new Error(errorString), errorString);
@@ -354,17 +370,24 @@ function _expire(key, timeInMillis) {
         return timeInMillis;
     }
 
+    // Call UNEXPIRE to wipe any existing expirey time
+    _unexpire.call($this, key);
+
+    // Set the new expire time
+    this.expirePointers[key] = setTimeout(function() {
+        _del.call($this, key);
+    }, timeInMillis);
+
+    return true;
+}
+
+function _unexpire(key) {
     // Check if there is an existing expire time, and if so, wipe it
     var existingTimeoutPointer = this.expirePointers[key];
     if (existingTimeoutPointer != null && typeof existingTimeoutPointer !== 'undefined') {
         clearTimeout(existingTimeoutPointer);
     }
-
-    // Set the new expire time
-    var $this = this;
-    this.expirePointers[key] = setTimeout(function() {
-        _del.call($this, key);
-    }, timeInMillis);
+    delete this.expirePointers[key];
 
     return true;
 }

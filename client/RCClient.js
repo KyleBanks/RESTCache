@@ -196,6 +196,19 @@ RCClient.prototype = {
     },
 
     /**
+     * Removes the existing expire time on the key(s) provided
+     * @param key
+     * @param cb
+     */
+    unexpire: function(key, cb) {
+        var $this = this;
+        $this.log("UNEXPIRE ["+key+"]");
+
+        var keys = normalizeArray(key);
+        $this.sendRequest("/unexpire", keys, null, cb);
+    },
+
+    /**
      * Returns a RANDOM key from the cache
      * @param cb
      */

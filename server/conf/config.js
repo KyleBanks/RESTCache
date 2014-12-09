@@ -58,6 +58,8 @@ module.exports = {
 
         EXPIRE: true,
 
+        UNEXPIRE: true,
+
         RANDOM: true,
 
         STATS: false,

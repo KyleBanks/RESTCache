@@ -560,6 +560,83 @@ function runTestInRequestMode(mode, testCallback) {
          },
 
         /**
+         * Tests UNEXPIRE
+         * @param cb
+         */
+         function(cb) {
+            client.set(expireSingleKey, expireSingleValue, function(error, response) {
+
+                // Set the expire time
+                client.expire(expireSingleKey, 3000, function(error, response) {
+                    assert.equal(error.length, 0, "EXPIRE returned an error: " + error);
+                    assert.equal(response.length, 1, "EXPIRE returned the wrong number of values: " + response.length);
+                    assert.equal(response[0], true, "EXPIRE did not return true: " + response[0]);
+
+                    // Remove the expiry
+                    client.unexpire(expireSingleKey, function(error, response) {
+                        assert.equal(error.length, 0, "UNEXPIRE after EXPIRE returned an error: " + error);
+                        assert.equal(response.length, 1, "UNEXPIRE after EXPIRE returned the wrong number of values: " + response.length);
+                        assert.equal(response[0], true, "UNEXPIRE after EXPIRE did not return the right value: " + response[0]);
+
+                        setTimeout(function() {
+                            // Get the value after it expires
+                            client.get(expireSingleKey, function(error, response) {
+                                assert.equal(error.length, 0, "UNEXPIRE after EXPIRE Complete returned an error: " + error);
+                                assert.equal(response.length, 1, "UNEXPIRE after EXPIRE Complete returned the wrong number of values: " + response.length);
+                                assert.equal(response[0], expireSingleValue, "UNEXPIRE after EXPIRE Complete did not return the right value: " + response[0]);
+
+                                console.log("UNEXPIRE: OK");
+                                cb(null, true);
+                            });
+                        }, 3000);
+                    });
+                });
+
+            });
+         },
+
+        /**
+         * Tests Multi-EXPIRE
+         * @param cb
+         */
+         function(cb) {
+            client.set(
+                [expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3],
+                [expireMultiSetValue1, expireMultiSetValue2, expireMultiSetValue3],
+                function(error, response) {
+
+                    // Set the expire times
+                    client.expire([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], [2000, 2000, 2000], function(error, response) {
+                        assert.equal(error.length, 0, "Multi-EXPIRE returned an error: " + error);
+                        assert.equal(response.length, 3, "Multi-EXPIRE returned the wrong number of values: " + response.length);
+                        assert.equal(response[0], true, "Multi-EXPIRE did not return true: " + response[0]);
+                        assert.equal(response[1], true, "Multi-EXPIRE did not return true: " + response[1]);
+                        assert.equal(response[2], true, "Multi-EXPIRE did not return true: " + response[2]);
+
+                            client.unexpire([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
+                                assert.equal(error.length, 0, "Multi-UNEXPIRE returned an error: " + error);
+                                assert.equal(response.length, 3, "Multi-UNEXPIRE returned the wrong number of values: " + response.length);
+                                assert.equal(response[0], true, "Multi-UNEXPIRE did not return the right value: " + response[0]);
+                                assert.equal(response[1], true, "Multi-UNEXPIRE did not return the right value: " + response[1]);
+                                assert.equal(response[2], true, "Multi-UNEXPIRE did not return the right value: " + response[2]);
+                            });
+
+                            // Check the keys did not expire
+                            setTimeout(function() {
+                                client.get([expireMultiSetKey1, expireMultiSetKey2, expireMultiSetKey3], function(error, response) {
+                                    assert.equal(error.length, 0, "GET after Multi-UNEXPIRE Complete returned an error: " + error);
+                                    assert.equal(response.length, 3, "GET after Multi-UNEXPIRE Complete returned the wrong number of values: " + response.length);
+                                    assert.equal(response[0], expireMultiSetValue1, "GET after Multi-UNEXPIRE Complete returned null for non-expired key: " + response[0]);
+                                    assert.equal(response[1], expireMultiSetValue2, "GET after Multi-UNEXPIRE Complete returned null for non-expired key: " + response[1]);
+                                    assert.equal(response[2], expireMultiSetValue3, "GET after Multi-UNEXPIRE Complete returned null for non-expired key: " + response[2]);
+                                });
+                            }, 2100);
+                    });
+
+                });
+         },
+
+        /**
          * Tests RANDOM
          * @param cb
          */
@@ -577,7 +654,7 @@ function runTestInRequestMode(mode, testCallback) {
                     cb(null, true);
                 });
           //  });
-         },
+         }
 
 //        /**
 //         * Tests STATS
